@@ -13,6 +13,9 @@ set(src
 	texture-font.h
 	texture-font.c
 
+	font-manager.h
+	font-manager.c
+
 	vertex-buffer.h
 	#vertex-buffer.c
 
@@ -41,6 +44,7 @@ set(src
 )
 
 find_package(Freetype)
+find_package(Fontconfig)
 find_package(Boost COMPONENTS filesystem REQUIRED)
 
 add_executable(${prj_name} ${src})
@@ -57,5 +61,8 @@ endforeach()
 
 target_include_directories(${prj_name} PRIVATE ${FREETYPE_INCLUDE_DIR_freetype2})
 target_link_libraries(${prj_name} ${FREETYPE_LIBRARY})
+
+target_include_directories(${prj_name} PRIVATE ${Fontconfig_INCLUDE_DIR})
+target_link_libraries(${prj_name} ${Fontconfig_LIBRARY})
 
 target_link_libraries(${prj_name} ${Boost_FILESYSTEM_LIBRARY})
