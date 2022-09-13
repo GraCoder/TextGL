@@ -12,6 +12,8 @@ project(${prj_name})
 set(src
 	TC_Font.h
 	TC_FontTexture.h
+	TC_GlyText.h
+	TC_GlyChar.h
 	)
 
 find_package(Freetype)
