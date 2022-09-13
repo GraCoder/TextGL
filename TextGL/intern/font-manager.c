@@ -145,10 +145,10 @@ font_manager_get_from_description( font_manager_t *self,
     }
     else
     {
-#if defined(_WIN32) || defined(_WIN64)
-        freetype_gl_error( Unimplemented_Function );
-        return 0;
-#endif
+//#if defined(_WIN32) || defined(_WIN64)
+//        freetype_gl_error( Unimplemented_Function );
+//        return 0;
+//#endif
         filename = font_manager_match_description( self, family, size, bold, italic );
         if( !filename )
         {
