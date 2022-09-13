@@ -5,6 +5,8 @@ set(prj_name TextGLDemo)
 project(${prj_name})
 
 set(prj_src
+    FontWidget.cpp 
+    FontWidget.h
     main.cpp
 )
 
@@ -13,6 +15,10 @@ set(prj_src
 #    OSGUTIL_LIBRARY
 #    OSGVIEWER_LIBRARY
 #)
+
+set(CMAKE_AUTOMOC true)
+
+find_package(Qt5 COMPONENTS Widgets Gui)
 
 add_executable(${prj_name} ${prj_src})
 
@@ -28,4 +34,8 @@ foreach(lib ${libs})
     target_link_libraries(${prj_name} debug ${${lib}_DEBUG} optimized ${${lib}_RELEASE})
 endforeach()
 
-target_link_libraries(${prj_name} PRIVATE ${TextGL})
+target_link_libraries(${prj_name} PRIVATE TextGL)
+
+target_link_libraries(${prj_name} PRIVATE Qt5::Widgets)
+
+set_target_properties(${prj_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

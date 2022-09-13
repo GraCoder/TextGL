@@ -35,8 +35,8 @@ set(src_intern
 
 	intern/vec234.h
 
-	intern/TCFont.cpp
-	intern/TCFontTexture.cpp
+	intern/TC_Font.cpp
+	intern/TC_FontTexture.cpp
 )
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

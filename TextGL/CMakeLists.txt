@@ -10,15 +10,15 @@ project(${prj_name})
 #tadd_dir()
 
 set(src
-	TCFont.h
-	TCFontTexture.h
+	TC_Font.h
+	TC_FontTexture.h
 	)
 
 find_package(Freetype)
 find_package(Fontconfig)
 find_package(Boost COMPONENTS filesystem REQUIRED)
 
-add_executable(${prj_name} ${src} ${src_intern})
+add_library(${prj_name} SHARED ${src} ${src_intern})
 
 set_target_properties(${prj_name} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY   "$<TARGET_FILE_DIR:${prj_name}>"
                                                VS_DEBUGGER_COMMAND           "$<TARGET_FILE:${prj_name}>"
@@ -40,3 +40,5 @@ target_link_libraries(${prj_name} ${Boost_FILESYSTEM_LIBRARY})
 
 
 target_include_directories(${prj_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+set_target_properties(${prj_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

@@ -25,7 +25,6 @@ file_exists( const char * filename )
     return 0;
 }
 
-
 // ------------------------------------------------------- font_manager_new ---
 font_manager_t *
 font_manager_new( size_t width, size_t height, size_t depth )
@@ -149,7 +148,7 @@ font_manager_get_from_description( font_manager_t *self,
 //        freetype_gl_error( Unimplemented_Function );
 //        return 0;
 //#endif
-        filename = font_manager_match_description( self, family, size, bold, italic );
+        filename = font_manager_match_description(family, size, bold, italic );
         if( !filename )
         {
 	    char string[0x101];
@@ -181,8 +180,7 @@ font_manager_get_from_markup( font_manager_t *self,
 
 // ----------------------------------------- font_manager_match_description ---
 char *
-font_manager_match_description( font_manager_t * self,
-                                const char * family,
+font_manager_match_description( const char * family,
                                 const float size,
                                 const int bold,
                                 const int italic )

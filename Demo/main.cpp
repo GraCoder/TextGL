@@ -1,13 +1,18 @@
 
-#include "TCFont.h"
-#include "TCFontTexture.h"
+#include "TC_Font.h"
+#include "TC_FontTexture.h"
+#include "FontWidget.h"
 
-int main()
+#include <QApplication>
+
+int main(int argc, char **argv)
 {
+	QApplication app(argc, argv);
 
-	//TCFont ft("");
+	FontWidget wgt;
+	wgt.show();
 
-	TCFontTexture tx;
-	TCFontTexture tx1;
-	tx1 = tx;
+	app.exec();
+
+	//TC_Font ft("");
 }

@@ -133,7 +133,7 @@ typedef struct font_manager_t {
  *  @return Requested font
  */
   texture_font_t *
-  font_manager_get_from_description( font_manager_t * self,
+  font_manager_get_from_description( font_manager_t * sel,
                                      const char * family,
                                      const float size,
                                      const int bold,
@@ -165,8 +165,7 @@ typedef struct font_manager_t {
  *  @return Requested font filename
  */
   char *
-  font_manager_match_description( font_manager_t * self,
-                                  const char * family,
+  font_manager_match_description( const char * family,
                                   const float size,
                                   const int bold,
                                   const int italic );
