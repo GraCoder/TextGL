@@ -39,6 +39,9 @@ set(src_intern
 	intern/TC_FontTexture.cpp
 	intern/TC_GlyText.cpp
 	intern/TC_GlyChar.cpp
+
+	intern/TC_TextureCache.h
+	intern/TC_TextureCache.cpp
 )
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

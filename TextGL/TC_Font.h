@@ -17,9 +17,29 @@ public:
 	TC_Font(const char *ptr);
 	~TC_Font();
 
-	std::string file_path();
+	uint32_t font_size() const { return _size; }
 
-private:
+	void set_font_size(uint32_t);
+
+	std::string file_path() const;
+
+	inline bool operator<(const TC_Font &ft) const
+	{
+		auto ret = strcmp(_family, ft._family);
+		if (ret < 0)
+			return true;
+		else if (ret > 0)
+			return false;
+
+		if (_italic < ft._italic)
+			return true;
+		else if (_italic > ft._italic)
+			return false;
+
+		return _bold < ft._bold;
+	}
+
+	private:
 
 	bool		_italic = false;
 	bool		_bold = false;

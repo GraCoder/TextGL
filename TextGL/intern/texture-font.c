@@ -711,6 +711,13 @@ texture_font_load_glyph(texture_font_t* self,
 		ucodepoint);
 }
 
+int texture_font_load_glyph(texture_font_t* self, uint32_t code)
+{
+	uint32_t gly_idx = FT_Get_Char_Index(self->face, code);
+	return texture_font_load_glyph_gi(self, gly_idx, 0);
+}
+
+
 // ------------------------------------------------ texture_font_load_glyph ---
 int
 texture_font_load_glyph_gi(texture_font_t* self,

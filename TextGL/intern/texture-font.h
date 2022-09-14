@@ -562,9 +562,9 @@ extern "C" {
 	 *
 	 * @return One if the glyph could be loaded, zero if not.
 	 */
-	int
-		texture_font_load_glyph(texture_font_t* self,
-			const char* codepoint);
+	int texture_font_load_glyph(texture_font_t* self, const char* codepoint);
+
+	int texture_font_load_glyph(texture_font_t* self, uint32_t code);
 
 	/**
 	 * Request a new glyph from the font. If it has not been created yet, it will

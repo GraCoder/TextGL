@@ -6,10 +6,14 @@
 #include <QStatusBar>
 #include <QPlainTextEdit>
 #include <QDockWidget>
+#include <QOpenGLWidget>
 
 #include <QFontDatabase>
 
 #include "TC_Font.h"
+#include "TC_GlyText.h"
+#include "TC_GlyChar.h"
+#include "TC_FontTexture.h"
 
 
 const std::map<std::string, std::string> fontMap = {{"ËÎÌו", "SimSun"},
@@ -94,6 +98,8 @@ FontWidget::FontWidget()
 		logwgt->setWidget(_edit);
 		addDockWidget(Qt::BottomDockWidgetArea, logwgt);
 	}
+
+	setCentralWidget(new QOpenGLWidget);
 }
 
 FontWidget::~FontWidget()
@@ -107,4 +113,16 @@ void FontWidget::resetFont(const QFont &font)
 	TC_Font ft(iter == fontMap.end() ? f.c_str() : iter->second.c_str());
 	auto file_path = ft.file_path();
 	_edit->appendPlainText(QString::fromLocal8Bit(file_path.c_str()));
+
+	TC_GlyText tex;
+	tex.set_font(ft);
+	tex.set_text("n");
+
+	for (auto &c : tex.get_chars()) {
+		auto tx = c.get_texture();
+
+		auto sz = tx->get_size();
+
+		QImage(tx->const_data(), sz.first, sz.second, QImage::Format_Grayscale8).save("1.png");
+	}
 }
