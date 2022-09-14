@@ -39,8 +39,8 @@ void TC_TextureCache::build(TC_GlyChar*gly_char, const TC_Font *ft)
 
 	auto atlas = ftgl::texture_atlas_new(TEXTURE_SIZE, TEXTURE_SIZE, 1);
 	tex = ftgl::texture_font_new_from_file( atlas, ft->font_size(), ft->file_path().c_str());
-	if (ftgl::texture_font_load_glyph(tex, gly_char->code()))
-		gly = ftgl::texture_font_find_glyph(tex, gly_char->code());
+	if (ftgl::texture_font_load_glyph_gi(tex, gly_char->code(), gly_char->code()))
+		gly = ftgl::texture_font_find_glyph_gi(tex, gly_char->code());
 
 	if (gly && tex) fun(tex, gly);
 }

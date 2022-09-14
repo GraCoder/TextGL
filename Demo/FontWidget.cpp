@@ -116,13 +116,13 @@ void FontWidget::resetFont(const QFont &font)
 
 	TC_GlyText tex;
 	tex.set_font(ft);
-	tex.set_text("n");
+	tex.set_text("A");
 
 	for (auto &c : tex.get_chars()) {
 		auto tx = c.get_texture();
 
 		auto sz = tx->get_size();
 
-		QImage(tx->const_data(), sz.first, sz.second, QImage::Format_Grayscale8).save("1.png");
+		QImage(tx->const_data(), sz.first, sz.second, QImage::Format_Grayscale8).save("test1.png");
 	}
 }
