@@ -8,7 +8,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-	namespace ftgl {
 #endif
 
 
@@ -204,7 +203,6 @@ extern "C" {
 
 
 #ifdef __cplusplus
-	}
 }
 #endif
 

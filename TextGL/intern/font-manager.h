@@ -6,17 +6,13 @@
 #ifndef __FONT_MANAGER_H__
 #define __FONT_MANAGER_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "vector.h"
 #include "markup.h"
 #include "texture-font.h"
 #include "texture-atlas.h"
 
 #ifdef __cplusplus
-namespace ftgl {
+extern "C" {
 #endif
 
 /**
@@ -173,7 +169,6 @@ typedef struct font_manager_t {
 /** @} */
 
 #ifdef __cplusplus
-}
 }
 #endif // ifdef __cplusplus
 

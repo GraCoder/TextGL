@@ -17,18 +17,18 @@ TC_TextureCache* TC_TextureCache::instance()
 
 void TC_TextureCache::build(TC_GlyChar*gly_char, const TC_Font *ft)
 {
-	ftgl::texture_font_t *tex = nullptr;
-	ftgl::texture_glyph_t *gly = nullptr;
+	texture_font_t *tex = nullptr;
+	texture_glyph_t *gly = nullptr;
 	auto iter = _cache.find(*ft);	
 	if (iter != _cache.end()) {
 		for (auto tx : iter->second->_textures) {
 			tex = tx;
-			gly = ftgl::texture_font_find_glyph_gi(tx, gly_char->code());
+			gly = texture_font_find_glyph(tx, gly_char->code());
 			if (gly) break;
 		}
 	}
 
-	auto fun = [gly_char, this](ftgl::texture_font_t *tex, ftgl::texture_glyph_t *gly) {
+	auto fun = [gly_char, this](texture_font_t *tex, texture_glyph_t *gly) {
 		gly_char->_texture = make_texture(tex);
 	};
 
@@ -37,15 +37,15 @@ void TC_TextureCache::build(TC_GlyChar*gly_char, const TC_Font *ft)
 		return;
 	}
 
-	auto atlas = ftgl::texture_atlas_new(TEXTURE_SIZE, TEXTURE_SIZE, 1);
-	tex = ftgl::texture_font_new_from_file( atlas, ft->font_size(), ft->file_path().c_str());
-	if (ftgl::texture_font_load_glyph_gi(tex, gly_char->code(), gly_char->code()))
-		gly = ftgl::texture_font_find_glyph_gi(tex, gly_char->code());
+	auto atlas = texture_atlas_new(TEXTURE_SIZE, TEXTURE_SIZE, 1);
+	tex = texture_font_new_from_file( atlas, ft->font_size(), ft->file_path().c_str());
+	if (texture_font_load_glyph(tex, gly_char->code()))
+		gly = texture_font_find_glyph(tex, gly_char->code());
 
 	if (gly && tex) fun(tex, gly);
 }
 
-std::shared_ptr<TC_FontTexture> TC_TextureCache::make_texture(ftgl::texture_font_t *tf)
+std::shared_ptr<TC_FontTexture> TC_TextureCache::make_texture(texture_font_t *tf)
 {
 	auto tex = std::make_shared<TC_FontTexture>();
 	tex->_width = tf->atlas->width;

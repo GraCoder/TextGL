@@ -2,10 +2,7 @@
 
 #include "font-manager.h"
 
-
-using namespace ftgl;
-
-#define TEXTURE_SIZE 1024
+//#define TEXTURE_SIZE 1024
 
 TC_Font::TC_Font(const char *family) 
 	: _italic(false), _bold(false)

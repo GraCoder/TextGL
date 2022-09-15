@@ -10,10 +10,8 @@ class TC_Font;
 class TC_GlyChar;
 class TC_FontTexture;
 
-namespace ftgl {
-	struct texture_atlas_t;
-	struct texture_font_t;
-}
+struct texture_atlas_t;
+struct texture_font_t;
 
 class TC_TextureSet {
 public:
@@ -21,7 +19,7 @@ public:
 	{
 	}
 	
-	std::vector<ftgl::texture_font_t *> _textures;
+	std::vector<texture_font_t *> _textures;
 };
 
 class TC_TextureCache {
@@ -33,7 +31,7 @@ public:
 
 private:
 
-	std::shared_ptr<TC_FontTexture> make_texture(ftgl::texture_font_t *);
+	std::shared_ptr<TC_FontTexture> make_texture(texture_font_t *);
 
 private:
 	TC_TextureCache();

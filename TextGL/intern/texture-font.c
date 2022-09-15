@@ -492,8 +492,8 @@ texture_font_clone(texture_font_t* old, float pt_size)
 		self->glyphs = vector_new(sizeof(texture_glyph_t*));
 	return self;
 }
-// ----------------------------------------------------- texture_font_close ---
 
+// ----------------------------------------------------- texture_font_close ---
 void
 texture_font_close(texture_font_t* self, font_mode_t face_mode, font_mode_t library_mode)
 {
@@ -511,8 +511,37 @@ texture_font_close(texture_font_t* self, font_mode_t face_mode, font_mode_t libr
 	}
 }
 
-// ------------------------------------------------- texture_font_load_face ---
+// ---------------------------------------------------- texture_font_delete ---
+void
+texture_font_delete(texture_font_t* self)
+{
+	size_t i;
+	texture_glyph_t* glyph;
+	FT_Error error = 0;
 
+	assert(self);
+
+	error = FT_Done_Size(self->ft_size);
+	if (error) {
+		freetype_error(error);
+	}
+
+	texture_font_close(self, MODE_ALWAYS_OPEN, MODE_FREE_CLOSE);
+
+	if (self->location == TEXTURE_FONT_FILE && self->filename)
+		free(self->filename);
+
+	GLYPHS_ITERATOR(i, glyph, self->glyphs) {
+		texture_glyph_delete(glyph);
+	} GLYPHS_ITERATOR_END1
+		free(__glyphs);
+	GLYPHS_ITERATOR_END2;
+
+	vector_delete(self->glyphs);
+	free(self);
+}
+
+// ------------------------------------------------- texture_font_load_face ---
 int
 texture_font_load_face(texture_font_t* self, float size)
 {
@@ -587,51 +616,29 @@ cleanup:
 	return 0;
 }
 
-// ---------------------------------------------------- texture_font_delete ---
-void
-texture_font_delete(texture_font_t* self)
+// ------------------------------------------------- texture_font_get_glyph ---
+texture_glyph_t*
+texture_font_get_glyph(texture_font_t* self, uint32_t codepoint)
 {
-	size_t i;
 	texture_glyph_t* glyph;
-	FT_Error error = 0;
 
 	assert(self);
+	assert(self->filename);
+	assert(self->atlas);
 
-	error = FT_Done_Size(self->ft_size);
-	if (error) {
-		freetype_error(error);
-	}
+	/* Check if codepoint has been already loaded */
+	if (!(glyph = texture_font_find_glyph(self, codepoint)))
+		/* Glyph has not been already loaded */
+		if (texture_font_load_glyph(self, codepoint))
+			glyph = texture_font_find_glyph(self, codepoint);
 
-	texture_font_close(self, MODE_ALWAYS_OPEN, MODE_FREE_CLOSE);
-
-	if (self->location == TEXTURE_FONT_FILE && self->filename)
-		free(self->filename);
-
-	GLYPHS_ITERATOR(i, glyph, self->glyphs) {
-		texture_glyph_delete(glyph);
-	} GLYPHS_ITERATOR_END1
-		free(__glyphs);
-	GLYPHS_ITERATOR_END2;
-
-	vector_delete(self->glyphs);
-	free(self);
+	return glyph;
 }
 
-// ------------------------------------------------ texture_font_find_glyph ---
-texture_glyph_t*
-texture_font_find_glyph(texture_font_t* self,
-	const char* codepoint)
-{
-	if (!codepoint)
-		return (texture_glyph_t*)self->atlas->special;
 
-	return texture_font_find_glyph_gi(self, utf8_to_utf32(codepoint));
-}
-
-// ---------------------------------------------- texture_font_find_glyph_gi ---
+// ---------------------------------------------- texture_font_find_glyph ---
 texture_glyph_t*
-texture_font_find_glyph_gi(texture_font_t* self,
-	uint32_t codepoint)
+texture_font_find_glyph(texture_font_t* self, uint32_t codepoint)
 {
 	uint32_t i = codepoint >> 8;
 	uint32_t j = codepoint & 0xFF;
@@ -695,8 +702,7 @@ texture_font_index_glyph(texture_font_t* self,
 
 // ------------------------------------------------ texture_font_load_glyph ---
 int
-texture_font_load_glyph(texture_font_t* self,
-	const char* codepoint)
+texture_font_load_glyph(texture_font_t* self, uint32_t codepoint)
 {
 	/* codepoint NULL is special : it is used for line drawing (overline,
 	 * underline, strikethrough) and background.
@@ -704,18 +710,13 @@ texture_font_load_glyph(texture_font_t* self,
 	if (!codepoint) {
 		return 1;
 	}
-	uint32_t ucodepoint = utf8_to_utf32(codepoint);
 
-	return texture_font_load_glyph_gi(self,
-		FT_Get_Char_Index(self->face, ucodepoint),
-		ucodepoint);
+	return texture_font_load_glyph_gi(self, FT_Get_Char_Index(self->face, codepoint), codepoint);
 }
 
 // ------------------------------------------------ texture_font_load_glyph ---
 int
-texture_font_load_glyph_gi(texture_font_t* self,
-	uint32_t glyph_index,
-	uint32_t ucodepoint)
+texture_font_load_glyph_gi(texture_font_t* self, uint32_t glyph_index, uint32_t codepoint)
 {
 	size_t i, x, y;
 	FT_Error error;
@@ -732,10 +733,10 @@ texture_font_load_glyph_gi(texture_font_t* self,
 	ivec4 region;
 	size_t missed = 0;
 
-	/* Check if codepoint has been already loaded */
-	if (texture_font_find_glyph_gi(self, ucodepoint)) {
-		return 1;
-	}
+	///* Check if codepoint has been already loaded */
+	//if (texture_font_find_glyph_gi(self, ucodepoint)) {
+	//	return 1;
+	//}
 
 	if (!texture_font_load_face(self, self->size))
 		return 0;
@@ -743,14 +744,14 @@ texture_font_load_glyph_gi(texture_font_t* self,
 	flags = 0;
 	ft_glyph_top = 0;
 	ft_glyph_left = 0;
-	if (!glyph_index) {
-		texture_glyph_t* glyph;
-		if ((glyph = texture_font_find_glyph(self, "\0"))) {
-			texture_font_index_glyph(self, glyph, ucodepoint);
-			texture_font_close(self, MODE_AUTO_CLOSE, MODE_AUTO_CLOSE);
-			return 1;
-		}
-	}
+	//if (!glyph_index) {
+	//	texture_glyph_t* glyph;
+	//	if ((glyph = texture_font_find_glyph(self, "\0"))) {
+	//		texture_font_index_glyph(self, glyph, ucodepoint);
+	//		texture_font_close(self, MODE_AUTO_CLOSE, MODE_AUTO_CLOSE);
+	//		return 1;
+	//	}
+	//}
 	// WARNING: We use texture-atlas depth to guess if user wants
 	//          LCD subpixel rendering
 
@@ -1003,8 +1004,8 @@ texture_font_load_glyph_gi(texture_font_t* self,
 	free(buffer);
 
 	glyph = texture_glyph_new();
-	glyph->codepoint = glyph_index ? ucodepoint : 0;
-	;
+	glyph->codepoint = glyph_index ? codepoint : 0;
+
 	glyph->width = tgt_w;
 	glyph->height = tgt_h;
 	glyph->rendermode = self->rendermode;
@@ -1038,7 +1039,7 @@ texture_font_load_glyph_gi(texture_font_t* self,
 		glyph->advance_y = convert_F26Dot6_to_float(slot->advance.y) * self->scale;
 	}
 
-	int free_glyph = texture_font_index_glyph(self, glyph, ucodepoint);
+	int free_glyph = texture_font_index_glyph(self, glyph, codepoint);
 	if (!glyph_index) {
 		if (!free_glyph) {
 			glyph = texture_glyph_clone(glyph);
@@ -1085,31 +1086,9 @@ texture_font_load_glyphs(texture_font_t* self,
 	return 0;
 }
 
-
-// ------------------------------------------------- texture_font_get_glyph ---
-texture_glyph_t*
-texture_font_get_glyph(texture_font_t* self,
-	const char* codepoint)
-{
-	texture_glyph_t* glyph;
-
-	assert(self);
-	assert(self->filename);
-	assert(self->atlas);
-
-	/* Check if codepoint has been already loaded */
-	if (!(glyph = texture_font_find_glyph(self, codepoint)))
-		/* Glyph has not been already loaded */
-		if (texture_font_load_glyph(self, codepoint))
-			glyph = texture_font_find_glyph(self, codepoint);
-
-	return glyph;
-}
-
 // ----------------------------------------------- texture_font_get_glyph_gi ---
 texture_glyph_t*
-texture_font_get_glyph_gi(texture_font_t* self,
-	uint32_t glyph_index)
+texture_font_get_glyph_gi(texture_font_t* self, uint32_t glyph_index)
 {
 	texture_glyph_t* glyph;
 
@@ -1121,9 +1100,9 @@ texture_font_get_glyph_gi(texture_font_t* self,
 	if ((glyph = texture_font_find_glyph_gi(self, glyph_index)))
 		return glyph;
 
-	/* Glyph has not been already loaded */
-	if (texture_font_load_glyph_gi(self, glyph_index, glyph_index))
-		return texture_font_find_glyph_gi(self, glyph_index);
+	///* Glyph has not been already loaded */
+	//if (texture_font_load_glyph_gi(self, glyph_index, glyph_index))
+	//	return texture_font_find_glyph_gi(self, glyph_index);
 
 	return NULL;
 }

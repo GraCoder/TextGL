@@ -14,10 +14,6 @@ extern "C" {
 
 #include <stddef.h>
 
-#ifdef __cplusplus
-namespace ftgl {
-#endif
-
 /**
  * @file   vector.h
  * @author Nicolas Rougier (Nicolas.Rougier@inria.fr)
@@ -323,7 +319,6 @@ typedef struct vector_t
 /** @} */
 
 #ifdef __cplusplus
-}
 }
 #endif
 
