@@ -42,6 +42,9 @@ set(src_intern
 
 	intern/TC_TextureCache.h
 	intern/TC_TextureCache.cpp
+
+	intern/TC_TextureSet.h
+	intern/TC_TextureSet.cpp
 )
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

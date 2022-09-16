@@ -20,12 +20,14 @@
 
 #include <stdlib.h>
 
+#define DEF_TEXTURE_SIZE 1024
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "vector.h"
 #include "vec234.h"
+#include "vector.h"
 
 /**
  * @file   texture-atlas.h
@@ -65,101 +67,66 @@ extern "C" {
  * @{
  */
 
-
 /**
  * A texture atlas is used to pack several small regions into a single texture.
  */
-typedef struct texture_atlas_t
-{
-    /**
-     * Allocated nodes
-     */
-    vector_t * nodes;
+typedef struct texture_atlas_t {
+  /**
+   * Allocated nodes
+   */
+  vector_t* nodes;
 
-    /**
-     *  Width (in pixels) of the underlying texture
-     */
-    size_t width;
+  /**
+   *  Width (in pixels) of the underlying texture
+   */
+  size_t width;
 
-    /**
-     * Height (in pixels) of the underlying texture
-     */
-    size_t height;
+  /**
+   * Height (in pixels) of the underlying texture
+   */
+  size_t height;
 
-    /**
-     * Depth (in bytes) of the underlying texture
-     */
-    size_t depth;
+  /**
+   * Depth (in bytes) of the underlying texture
+   */
+  size_t depth;
 
-    /**
-     * Allocated surface size
-     */
-    size_t used;
+  /**
+   * Allocated surface size
+   */
+  size_t used;
 
-    /**
-     * Texture identity (OpenGL)
-     */
-    unsigned int id;
+  /**
+   * Texture identity (OpenGL)
+   */
+  unsigned int id;
 
-    /**
-     * Atlas data
-     */
-    unsigned char * data;
+  /**
+   * Atlas data
+   */
+  unsigned char* data;
 
-    /**
-     * Atlas has been modified
-     */
-    unsigned char modified;
+  /**
+   * Atlas has been modified
+   */
+  unsigned char modified;
 
-    /**
-     * Atlas special glyph, this is a void*, and will be typecasted as necessary
-     */
+  /**
+   * Atlas special glyph, this is a void*, and will be typecasted as necessary
+   */
 
-    void * special;
+  void* special;
 
 } texture_atlas_t;
 
 
+texture_atlas_t* texture_atlas_new(const size_t width, const size_t height, const size_t depth);
 
-/**
- * Creates a new empty texture atlas.
- *
- * @param   width   width of the atlas
- * @param   height  height of the atlas
- * @param   depth   bit depth of the atlas
- * @return          a new empty texture atlas.
- *
- */
-  texture_atlas_t *
-  texture_atlas_new( const size_t width,
-                     const size_t height,
-                     const size_t depth );
+void texture_atlas_delete(texture_atlas_t* self);
 
+int texture_atlas_has_space(texture_atlas_t* self, size_t width, size_t height);
 
-/**
- *  Deletes a texture atlas.
- *
- *  @param self a texture atlas structure
- *
- */
-  void
-  texture_atlas_delete( texture_atlas_t * self );
-
-
-/**
- *  Allocate a new region in the atlas.
- *
- *  @param self   a texture atlas structure
- *  @param width  width of the region to allocate
- *  @param height height of the region to allocate
- *  @return       Coordinates of the allocated region
- *
- */
-  ivec4
-  texture_atlas_get_region( texture_atlas_t * self,
-                            const size_t width,
-                            const size_t height );
-
+ivec4 texture_atlas_get_region(texture_atlas_t* self, const size_t width, const size_t height);
 
 /**
  *  Upload data to the specified atlas region.
@@ -173,22 +140,15 @@ typedef struct texture_atlas_t
  *  @param stride stride of the data
  *
  */
-  void
-  texture_atlas_set_region( texture_atlas_t * self,
-                            const size_t x,
-                            const size_t y,
-                            const size_t width,
-                            const size_t height,
-                            const unsigned char *data,
-                            const size_t stride );
+void texture_atlas_set_region(texture_atlas_t* self, const size_t x, const size_t y, const size_t width, const size_t height, const unsigned char* data,
+                              const size_t stride);
 
 /**
  *  Remove all allocated regions from the atlas.
  *
  *  @param self   a texture atlas structure
  */
-  void
-  texture_atlas_clear( texture_atlas_t * self );
+void texture_atlas_clear(texture_atlas_t* self);
 
 /**
  *  Enlarge a texture atlas
@@ -197,8 +157,7 @@ typedef struct texture_atlas_t
  *  @param width_new  new width
  *  @param height_new new height
  */
-  void
-  texture_atlas_enlarge_texture ( texture_atlas_t* self, size_t width_new, size_t height_new);
+void texture_atlas_enlarge_texture(texture_atlas_t* self, size_t width_new, size_t height_new);
 
 /** @} */
 

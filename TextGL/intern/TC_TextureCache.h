@@ -9,18 +9,10 @@
 class TC_Font;
 class TC_GlyChar;
 class TC_FontTexture;
+class TC_TextureSet;
 
-struct texture_atlas_t;
 struct texture_font_t;
-
-class TC_TextureSet {
-public:
-	TC_TextureSet()
-	{
-	}
-	
-	std::vector<texture_font_t *> _textures;
-};
+struct texture_glyph_t; 
 
 class TC_TextureCache {
 public:
@@ -30,6 +22,8 @@ public:
 	void build(TC_GlyChar *, const TC_Font *);
 
 private:
+
+	void construct(TC_GlyChar *, texture_font_t *, texture_glyph_t *);
 
 	std::shared_ptr<TC_FontTexture> make_texture(texture_font_t *);
 

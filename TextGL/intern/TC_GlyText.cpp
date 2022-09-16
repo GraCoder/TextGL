@@ -1,5 +1,7 @@
 #include "TC_GlyText.h"
 
+#include <freetype/freetype.h>
+
 TC_GlyText::TC_GlyText() : _font("simsum")
 {
 }

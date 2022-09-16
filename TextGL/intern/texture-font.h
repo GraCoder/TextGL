@@ -6,21 +6,21 @@
 #ifndef __TEXTURE_FONT_H__
 #define __TEXTURE_FONT_H__
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "vector.h"
 #include "texture-atlas.h"
+#include "vector.h"
 
 #ifndef __THREAD
 #if defined(__GNUC__) || defined(__clang__)
 #define __THREAD __thread
 #elif defined(_MSC_VER)
-#define __THREAD __declspec( thread )
+#define __THREAD __declspec(thread)
 #else
 #define __THREAD
 #endif
@@ -47,27 +47,15 @@ extern "C" {
  * @{
  */
 
-
- /**
-  * A list of possible ways to render a glyph.
-  */
-typedef enum rendermode_t
-{
-	RENDER_NORMAL,
-	RENDER_OUTLINE_EDGE,
-	RENDER_OUTLINE_POSITIVE,
-	RENDER_OUTLINE_NEGATIVE,
-	RENDER_SIGNED_DISTANCE_FIELD
-} rendermode_t;
+/**
+ * A list of possible ways to render a glyph.
+ */
+typedef enum rendermode_t { RENDER_NORMAL, RENDER_OUTLINE_EDGE, RENDER_OUTLINE_POSITIVE, RENDER_OUTLINE_NEGATIVE, RENDER_SIGNED_DISTANCE_FIELD } rendermode_t;
 
 /**
  * Glyph array end mark type
  */
-typedef enum glyphmode_t
-{
-	GLYPH_END = 0,
-	GLYPH_CONT = 1
-} glyphmode_t;
+typedef enum glyphmode_t { GLYPH_END = 0, GLYPH_CONT = 1 } glyphmode_t;
 
 /*
  * Glyph metrics:
@@ -102,113 +90,103 @@ typedef enum glyphmode_t
  *              |------------- advance_x ---------->|
  */
 
- /**
-  * A structure that describe a glyph.
-  */
-typedef struct texture_glyph_t
-{
-	/**
-	 * Unicode codepoint this glyph represents in UTF-32 LE encoding.
-	 */
-	uint32_t codepoint;
+/**
+ * A structure that describe a glyph.
+ */
+typedef struct texture_glyph_t {
+  /**
+   * Unicode codepoint this glyph represents in UTF-32 LE encoding.
+   */
+  uint32_t codepoint;
 
-	/**
-	 * Glyph's width in pixels.
-	 */
-	size_t width;
+  /**
+   * Glyph's width in pixels.
+   */
+  size_t width;
 
-	/**
-	 * Glyph's height in pixels.
-	 */
-	size_t height;
+  /**
+   * Glyph's height in pixels.
+   */
+  size_t height;
 
-	/**
-	 * Glyph's left bearing expressed in integer pixels.
-	 */
-	int offset_x;
+  /**
+   * Glyph's left bearing expressed in integer pixels.
+   */
+  int offset_x;
 
-	/**
-	 * Glyphs's top bearing expressed in integer pixels.
-	 *
-	 * Remember that this is the distance from the baseline to the top-most
-	 * glyph scanline, upwards y coordinates being positive.
-	 */
-	int offset_y;
+  /**
+   * Glyphs's top bearing expressed in integer pixels.
+   *
+   * Remember that this is the distance from the baseline to the top-most
+   * glyph scanline, upwards y coordinates being positive.
+   */
+  int offset_y;
 
-	/**
-	 * For horizontal text layouts, this is the horizontal distance (in
-	 * fractional pixels) used to increment the pen position when the glyph is
-	 * drawn as part of a string of text.
-	 */
-	float advance_x;
+  /**
+   * For horizontal text layouts, this is the horizontal distance (in
+   * fractional pixels) used to increment the pen position when the glyph is
+   * drawn as part of a string of text.
+   */
+  float advance_x;
 
-	/**
-	 * For vertical text layouts, this is the vertical distance (in fractional
-	 * pixels) used to increment the pen position when the glyph is drawn as
-	 * part of a string of text.
-	 */
-	float advance_y;
+  /**
+   * For vertical text layouts, this is the vertical distance (in fractional
+   * pixels) used to increment the pen position when the glyph is drawn as
+   * part of a string of text.
+   */
+  float advance_y;
 
-	/**
-	 * First normalized texture coordinate (x) of top-left corner
-	 */
-	float s0;
+  /**
+   * First normalized texture coordinate (x) of top-left corner
+   */
+  float s0;
 
-	/**
-	 * Second normalized texture coordinate (y) of top-left corner
-	 */
-	float t0;
+  /**
+   * Second normalized texture coordinate (y) of top-left corner
+   */
+  float t0;
 
-	/**
-	 * First normalized texture coordinate (x) of bottom-right corner
-	 */
-	float s1;
+  /**
+   * First normalized texture coordinate (x) of bottom-right corner
+   */
+  float s1;
 
-	/**
-	 * Second normalized texture coordinate (y) of bottom-right corner
-	 */
-	float t1;
+  /**
+   * Second normalized texture coordinate (y) of bottom-right corner
+   */
+  float t1;
 
-	/**
-	 * A vector of kerning pairs relative to this glyph.
-	 */
-	vector_t* kerning;
+  /**
+   * A vector of kerning pairs relative to this glyph.
+   */
+  vector_t* kerning;
 
-	/**
-	 * Mode this glyph was rendered
-	 */
-	rendermode_t rendermode;
+  /**
+   * Mode this glyph was rendered
+   */
+  rendermode_t rendermode;
 
-	/**
-	 * Glyph outline thickness
-	 */
-	float outline_thickness;
+  /**
+   * Glyph outline thickness
+   */
+  float outline_thickness;
 
-	/**
-	 * Glyph scan end mark
-	 */
-	glyphmode_t glyphmode;
+  /**
+   * Glyph scan end mark
+   */
+  glyphmode_t glyphmode;
 
 } texture_glyph_t;
 
 /**
  * Enum type for texture location
  */
-typedef enum font_location_t {
-	TEXTURE_FONT_FILE = 0,
-	TEXTURE_FONT_MEMORY
-} font_location_t;
+typedef enum font_location_t { TEXTURE_FONT_FILE = 0, TEXTURE_FONT_MEMORY } font_location_t;
 
 /**
  * Enum type for automatic open/close
  */
-typedef enum font_mode_t {
-	MODE_AUTO_CLOSE = 0,
-	MODE_GLYPHS_CLOSE,
-	MODE_FREE_CLOSE,
-	MODE_MANUAL_CLOSE,
-	MODE_ALWAYS_OPEN
-} font_mode_t;
+typedef enum font_mode_t { MODE_AUTO_CLOSE = 0, MODE_GLYPHS_CLOSE, MODE_FREE_CLOSE, MODE_MANUAL_CLOSE, MODE_ALWAYS_OPEN } font_mode_t;
 /**
  * default mode for fonts
  */
@@ -221,194 +199,194 @@ extern __THREAD font_mode_t mode_default;
 
 void texture_font_default_mode(font_mode_t mode);
 
-	/* If there is no Freetype included, just define that as incomplete pointer */
+/* If there is no Freetype included, just define that as incomplete pointer */
 #if !defined(FT2BUILD_H_) && !defined(__FT2BUILD_H__) && !defined(FREETYPE_H_)
-	typedef struct FT_FaceRec_* FT_Face;
-	typedef struct FT_LibraryRec_* FT_Library;
-	typedef struct FT_SizeRec_* FT_Size;
+typedef struct FT_FaceRec_* FT_Face;
+typedef struct FT_LibraryRec_* FT_Library;
+typedef struct FT_SizeRec_* FT_Size;
 #endif
 
-	/* same for harfbuzz */
+/* same for harfbuzz */
 #ifndef HB_BUFFER_H
-	typedef struct hb_font_t hb_font_t;
+typedef struct hb_font_t hb_font_t;
 #endif
 
 /**
  *  Texture font library structure.
  */
-typedef struct texture_font_library_t
-{
-	/**
-	 * Flag for mode
-	 */
-	font_mode_t mode;
+typedef struct texture_font_library_t {
+  /**
+   * Flag for mode
+   */
+  font_mode_t mode;
 
-	/**
-	 * Freetype library pointer
-	 */
-	FT_Library library;
+  /**
+   * Freetype library pointer
+   */
+  FT_Library library;
+
 } texture_font_library_t;
 
 /**
  *  Texture font structure.
  */
-typedef struct texture_font_t
-{
-	/**
-	 * Vector of glyphs contained in this font.
-	 * This is actually a two-stage table, indexing into 256 glyphs each
-	 */
-	vector_t* glyphs;
+typedef struct texture_font_t {
+  /**
+   * Vector of glyphs contained in this font.
+   * This is actually a two-stage table, indexing into 256 glyphs each
+   */
+  vector_t* glyphs;
 
-	/**
-	 * Atlas structure to store glyphs data.
-	 */
-	texture_atlas_t* atlas;
+  /**
+   * Atlas structure to store glyphs data.
+   */
+  texture_atlas_t* atlas;
 
-	/**
-	 * font location
-	 */
-	font_location_t location;
+  /**
+   * font location
+   */
+  font_location_t location;
 
-	union {
-		/**
-		 * Font filename, for when location == TEXTURE_FONT_FILE
-		 */
-		char* filename;
+  union {
+    /**
+     * Font filename, for when location == TEXTURE_FONT_FILE
+     */
+    char* filename;
 
-		/**
-		 * Font memory address, for when location == TEXTURE_FONT_MEMORY
-		 */
-		struct {
-			const void* base;
-			size_t size;
-		} memory;
-	};
+    /**
+     * Font memory address, for when location == TEXTURE_FONT_MEMORY
+     */
+    struct {
+      const void* base;
+      size_t size;
+    } memory;
+  };
 
-	/**
-	 * Texture font library
-	 */
+  /**
+   * Texture font library
+   */
 
-	texture_font_library_t* library;
+  texture_font_library_t* library;
 
-	/**
-	 * Font size
-	 */
-	float size;
+  /**
+   * Font size
+   */
+  float size;
 
-	/**
-	 * Mode the font is rendering its next glyph
-	 */
-	rendermode_t rendermode;
+  /**
+   * Mode the font is rendering its next glyph
+   */
+  rendermode_t rendermode;
 
-	/**
-	 * Outline thickness
-	 */
-	float outline_thickness;
+  /**
+   * Outline thickness
+   */
+  float outline_thickness;
 
-	/**
-	 * Whether to use our own lcd filter.
-	 */
-	unsigned char filtering;
-	/**
-	 * Whether to use kerning if available
-	 */
-	unsigned char kerning;
+  /**
+   * Whether to use our own lcd filter.
+   */
+  unsigned char filtering;
+  /**
+   * Whether to use kerning if available
+   */
+  unsigned char kerning;
 
-	/**
-	 * Whether to use autohint when rendering font
-	 */
-	unsigned char hinting;
+  /**
+   * Whether to use autohint when rendering font
+   */
+  unsigned char hinting;
 
-	/**
-	 * Whether to scale texture coordinates
-	 */
-	unsigned char scaletex;
+  /**
+   * Whether to scale texture coordinates
+   */
+  unsigned char scaletex;
 
-	/**
-	 * LCD filter weights
-	 */
-	unsigned char lcd_weights[5];
+  /**
+   * LCD filter weights
+   */
+  unsigned char lcd_weights[5];
 
-	/**
-	 * This field is simply used to compute a default line spacing (i.e., the
-	 * baseline-to-baseline distance) when writing text with this font. Note
-	 * that it usually is larger than the sum of the ascender and descender
-	 * taken as absolute values. There is also no guarantee that no glyphs
-	 * extend above or below subsequent baselines when using this distance.
-	 */
-	float height;
+  /**
+   * This field is simply used to compute a default line spacing (i.e., the
+   * baseline-to-baseline distance) when writing text with this font. Note
+   * that it usually is larger than the sum of the ascender and descender
+   * taken as absolute values. There is also no guarantee that no glyphs
+   * extend above or below subsequent baselines when using this distance.
+   */
+  float height;
 
-	/**
-	 * This field is the distance that must be placed between two lines of
-	 * text. The baseline-to-baseline distance should be computed as:
-	 * ascender - descender + linegap
-	 */
-	float linegap;
+  /**
+   * This field is the distance that must be placed between two lines of
+   * text. The baseline-to-baseline distance should be computed as:
+   * ascender - descender + linegap
+   */
+  float linegap;
 
-	/**
-	 * The ascender is the vertical distance from the horizontal baseline to
-	 * the highest 'character' coordinate in a font face. Unfortunately, font
-	 * formats define the ascender differently. For some, it represents the
-	 * ascent of all capital latin characters (without accents), for others it
-	 * is the ascent of the highest accented character, and finally, other
-	 * formats define it as being equal to bbox.yMax.
-	 */
-	float ascender;
+  /**
+   * The ascender is the vertical distance from the horizontal baseline to
+   * the highest 'character' coordinate in a font face. Unfortunately, font
+   * formats define the ascender differently. For some, it represents the
+   * ascent of all capital latin characters (without accents), for others it
+   * is the ascent of the highest accented character, and finally, other
+   * formats define it as being equal to bbox.yMax.
+   */
+  float ascender;
 
-	/**
-	 * The descender is the vertical distance from the horizontal baseline to
-	 * the lowest 'character' coordinate in a font face. Unfortunately, font
-	 * formats define the descender differently. For some, it represents the
-	 * descent of all capital latin characters (without accents), for others it
-	 * is the ascent of the lowest accented character, and finally, other
-	 * formats define it as being equal to bbox.yMin. This field is negative
-	 * for values below the baseline.
-	 */
-	float descender;
+  /**
+   * The descender is the vertical distance from the horizontal baseline to
+   * the lowest 'character' coordinate in a font face. Unfortunately, font
+   * formats define the descender differently. For some, it represents the
+   * descent of all capital latin characters (without accents), for others it
+   * is the ascent of the lowest accented character, and finally, other
+   * formats define it as being equal to bbox.yMin. This field is negative
+   * for values below the baseline.
+   */
+  float descender;
 
-	/**
-	 * The position of the underline line for this face. It is the center of
-	 * the underlining stem. Only relevant for scalable formats.
-	 */
-	float underline_position;
+  /**
+   * The position of the underline line for this face. It is the center of
+   * the underlining stem. Only relevant for scalable formats.
+   */
+  float underline_position;
 
-	/**
-	 * The thickness of the underline for this face. Only relevant for scalable
-	 * formats.
-	 */
-	float underline_thickness;
+  /**
+   * The thickness of the underline for this face. Only relevant for scalable
+   * formats.
+   */
+  float underline_thickness;
 
-	/**
-	* The padding to be add to the glyph's texture that are loaded by this font.
-	* Usefull when adding effects with shaders.
-	*/
-	int padding;
+  /**
+   * The padding to be add to the glyph's texture that are loaded by this font.
+   * Usefull when adding effects with shaders.
+   */
+  int padding;
 
-	/**
-	 * Flag for mode
-	 */
-	font_mode_t mode;
+  /**
+   * Flag for mode
+   */
+  font_mode_t mode;
 
-	/**
-	 * Freetype face pointer
-	 */
-	FT_Face face;
+  /**
+   * Freetype face pointer
+   */
+  FT_Face face;
 
-	/**
-	 * Freetype size pointer
-	 */
-	FT_Size ft_size;
+  /**
+   * Freetype size pointer
+   */
+  FT_Size ft_size;
 
-	/**
-	 * Harfbuzz font pointer
-	 */
-	hb_font_t* hb_font;
+  /**
+   * Harfbuzz font pointer
+   */
+  hb_font_t* hb_font;
 
-	/**
-	 * factor to scale font coordinates
-	 */
-	float scale;
+  /**
+   * factor to scale font coordinates
+   */
+  float scale;
+
 } texture_font_t;
 
 /**
@@ -416,8 +394,7 @@ typedef struct texture_font_t
  *
  * @return a new library (no font loaded yet)
  */
-texture_font_library_t*
-	texture_library_new(void);
+texture_font_library_t* texture_library_new(void);
 
 /**
  * This variable holds the per-thread library
@@ -439,11 +416,7 @@ extern __THREAD texture_font_library_t* freetype_gl_library;
  * @return A new empty font (no glyph inside yet)
  *
  */
-texture_font_t*
-	texture_font_new_from_file(texture_atlas_t* atlas,
-		const float pt_size,
-		const char* filename);
-
+texture_font_t* texture_font_new_from_file(texture_atlas_t* atlas, const float pt_size, const char* filename);
 
 /**
  * This function creates a new texture font from a memory location and size.
@@ -460,8 +433,7 @@ texture_font_t*
  * @return A new empty font (no glyph inside yet)
  *
  */
-texture_font_t*
-	texture_font_new_from_memory(texture_atlas_t* atlas, float pt_size, const void* memory_base, size_t memory_size);
+texture_font_t* texture_font_new_from_memory(texture_atlas_t* atlas, float pt_size, const void* memory_base, size_t memory_size);
 
 /**
  * Clone the freetype-gl font and set a different size
@@ -469,8 +441,7 @@ texture_font_t*
  * @param self         a valid texture font
  * @param size         the new size of the font
  */
-texture_font_t*
-	texture_font_clone(texture_font_t* self, float size);
+texture_font_t* texture_font_clone(texture_font_t* self, float size);
 
 /**
  * Close the freetype structures from a font and the associated library
@@ -479,8 +450,7 @@ texture_font_t*
  * @param face_mode    if the mode of the face is less or equal, be done with it
  * @param library_mode if the mode of the library is less or equal, be done with it
  */
-void
-	texture_font_close(texture_font_t* self, font_mode_t face_mode, font_mode_t library_mode);
+void texture_font_close(texture_font_t* self, font_mode_t face_mode, font_mode_t library_mode);
 
 /**
  * Delete a texture font. Note that this does not delete the glyph from the
@@ -488,21 +458,9 @@ void
  *
  * @param self a valid texture font
  */
-void
-	texture_font_delete(texture_font_t* self);
+void texture_font_delete(texture_font_t* self);
 
-
-/**
- * Load a texture font.
- *
- * @param self  a valid texture font
- * @param size  the size of the font
- *
- * @return 1 on success, 0 on error
- */
-int
-	texture_font_load_face(texture_font_t* self, float size);
-
+int texture_font_load_face(texture_font_t* self, float size);
 
 /**
  * Request a new glyph from the font. If it has not been created yet, it will
@@ -511,32 +469,12 @@ int
  *         enough
  *
  */
-texture_glyph_t*
-	texture_font_get_glyph(texture_font_t* self, uint32_t codepoint);
+texture_glyph_t* texture_font_get_glyph(texture_font_t* self, uint32_t codepoint);
 
-/**
- * Index a glyph in a font
- *
- * @param self      A valid texture font
- * @param glyph     The glyph to index in the font
- * @param codepoint The codepoint to insert into
- *
- * @return          1 if glyph was copied, 0 if it was inserted
- */
-int
-	texture_font_index_glyph(texture_font_t* self,
-		texture_glyph_t* glyph,
-		uint32_t codepoint);
+int texture_font_index_glyph(texture_font_t* self, texture_glyph_t* glyph, uint32_t codepoint);
 
-/**
- * Request the loading of a given glyph.
- *
- * @param self       A valid texture font
- * @param codepoint  Character codepoint to be loaded in UTF-8 encoding.
- *
- * @return One if the glyph could be loaded, zero if not.
- */
-int texture_font_load_glyph(texture_font_t* self, uint32_t codepoint);
+uint32_t texture_font_load_glyph(texture_font_t* self, uint32_t codepoint);
+uint32_t texture_font_load_glyph_gi(texture_font_t* self, uint32_t glyph_index, uint32_t codepoint);
 
 /**
  * Request a new glyph from the font. If it has not been created yet, it will
@@ -549,26 +487,12 @@ int texture_font_load_glyph(texture_font_t* self, uint32_t codepoint);
  *         enough
  *
  */
-texture_glyph_t*
-	texture_font_get_glyph_gi(texture_font_t* self, uint32_t glyph_index);
+texture_glyph_t* texture_font_get_glyph_gi(texture_font_t* self, uint32_t glyph_index);
 
 /**
  * @return A pointer on the glyph or 0 if the glyph is not loaded
  */
-texture_glyph_t*
-	texture_font_find_glyph(texture_font_t* self, uint32_t codepoint);
-
-/**
- * Request the loading of a given glyph.
- *
- * @param self         A valid texture font
- * @param glyph_index  Character codepoint to be loaded in font's codepoint
- * @param ucodepoint   Character codepoint for inserting into lookup table
- *
- * @return One if the glyph could be loaded, zero if not.
- */
-int
-	texture_font_load_glyph_gi(texture_font_t* self, uint32_t glyph_index, uint32_t codepoint);
+texture_glyph_t* texture_font_find_glyph(texture_font_t* self, uint32_t codepoint);
 
 /**
  * Request the loading of several glyphs at once.
@@ -580,9 +504,7 @@ int
  * @return Number of missed glyph if the texture is not big enough to hold
  *         every glyphs.
  */
-size_t
-	texture_font_load_glyphs(texture_font_t* self,
-		const char* codepoints);
+size_t texture_font_load_glyphs(texture_font_t* self, const char* codepoints);
 /**
  * Increases the size of a fonts texture atlas
  * Invalidates all pointers to font->atlas->data
@@ -594,9 +516,7 @@ size_t
  * @param height_new Height of the texture atlas after resizing (must be bigger or
  *                   equal to current height)
  */
-void
-	texture_font_enlarge_atlas(texture_font_t* self, size_t width_new,
-		size_t height_new);
+void texture_font_enlarge_atlas(texture_font_t* self, size_t width_new, size_t height_new);
 
 /**
  * Changes the UV Coordinates of existing glyphs in the font
@@ -605,8 +525,7 @@ void
  * @param mulw scale factor for width
  * @param mulh scale factor for height
  */
-void
-	texture_font_enlarge_glyphs(texture_font_t* self, float mulw, float mulh);
+void texture_font_enlarge_glyphs(texture_font_t* self, float mulw, float mulh);
 
 /**
  * Increases the size of a fonts texture atlas
@@ -617,9 +536,7 @@ void
  * @param height_new Height of the texture atlas after resizing (must be bigger or
  *                   equal to current height)
  */
-void
-	texture_font_enlarge_texture(texture_font_t* self, size_t width_new,
-		size_t height_new);
+void texture_font_enlarge_texture(texture_font_t* self, size_t width_new, size_t height_new);
 /**
  * Get the kerning between two horizontal glyphs.
  *
@@ -628,53 +545,41 @@ void
  *
  * @return x kerning value
  */
-float
-	texture_glyph_get_kerning(const texture_glyph_t* self,
-		const char* codepoint);
+float texture_glyph_get_kerning(const texture_glyph_t* self, const char* codepoint);
 
+texture_glyph_t* texture_glyph_new(void);
 
-/**
- * Creates a new empty glyph
- *
- * @return a new empty glyph (not valid)
- */
-texture_glyph_t*
-	texture_glyph_new(void);
-
-/**
- * Delete a glyph
- *
- * @param  self         A valid texture glyph
- */
-void
-	texture_glyph_delete(texture_glyph_t* self);
+void texture_glyph_delete(texture_glyph_t* self);
 
 /**
  * Clone a glyph
  *
  * @param self         A valid texture glyph
  */
-texture_glyph_t*
-	texture_glyph_clone(texture_glyph_t* self);
+texture_glyph_t* texture_glyph_clone(texture_glyph_t* self);
 
 /** @} */
 
-#define GLYPHS_ITERATOR1(index, name, glyph) \
-    for( index = 0; index < vector_size ( glyph ); index++ ) { \
-	texture_glyph_t ** __glyphs;
-#define GLYPHS_ITERATOR2(index, name, glyph) \
-	if(( __glyphs = *(texture_glyph_t *** ) vector_get ( glyph, index ) )) { \
-	    int __i;							\
-	    for( __i = 0; __i < 0x100; __i++ ) {			\
-		if(( name = __glyphs[__i] ))
+#define GLYPHS_ITERATOR1(index, name, glyph)             \
+  for (index = 0; index < vector_size(glyph); index++) { \
+    texture_glyph_t** __glyphs;
+#define GLYPHS_ITERATOR2(index, name, glyph)                        \
+  if ((__glyphs = *(texture_glyph_t***)vector_get(glyph, index))) { \
+    int __i;                                                        \
+    for (__i = 0; __i < 0x100; __i++) {                             \
+      if ((name = __glyphs[__i]))
 #define GLYPHS_ITERATOR(index, name, glyph) \
-    GLYPHS_ITERATOR1(index, name, glyph)		\
-	GLYPHS_ITERATOR2(index, name, glyph)
+  GLYPHS_ITERATOR1(index, name, glyph)      \
+  GLYPHS_ITERATOR2(index, name, glyph)
 
 #define GLYPHS_ITERATOR_END1 }
-#define GLYPHS_ITERATOR_END2 } }
-#define GLYPHS_ITERATOR_END } } }
-
+#define GLYPHS_ITERATOR_END2 \
+  }                          \
+  }
+#define GLYPHS_ITERATOR_END \
+  }                         \
+  }                         \
+  }
 
 #ifdef __cplusplus
 }
