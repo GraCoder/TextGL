@@ -23,8 +23,8 @@ void TC_TextureCache::build(TC_GlyChar *gly_char, const TC_Font *ft) {
       if (gly) break;
     }
   } else {
-    auto set = std::make_unique<TC_TextureSet>();
-    iter = _cache.insert(std::make_pair(*ft, set)).first;
+    //auto set = std::make_unique<TC_TextureSet>();
+    iter = _cache.insert(std::make_pair(*ft, std::make_unique<TC_TextureSet>())).first;
   }
 
   if (gly && tex) {
@@ -35,7 +35,7 @@ void TC_TextureCache::build(TC_GlyChar *gly_char, const TC_Font *ft) {
   auto &texs = iter->second->_textures;
 
   bool create_tex = false;
-  if (iter == _cache.end()) create_tex = true;
+  if (texs.empty()) create_tex = true;
   else {
     auto tex = texs.front();
     auto ret = texture_font_load_glyph(tex, gly_char->code());
@@ -61,14 +61,14 @@ void TC_TextureCache::build(TC_GlyChar *gly_char, const TC_Font *ft) {
 
   if (create_tex) {
     auto atlas = texture_atlas_new(DEF_TEXTURE_SIZE, DEF_TEXTURE_SIZE, 1);
-    if (iter == _cache.end())
+    if (texs.empty())
       tex = texture_font_new_from_file(atlas, ft->font_size(), ft->file_path().c_str());
     else {
       auto &fst = iter->second->_textures.front();
       tex = texture_font_clone(fst, fst->size);
       tex->atlas = atlas;
     }
-
+    texs.push_back(tex);
     if (!texture_font_load_glyph(tex, gly_char->code())) {
       gly = texture_font_find_glyph(tex, gly_char->code());
       construct(gly_char, tex, gly);
