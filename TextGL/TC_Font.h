@@ -14,12 +14,14 @@
 
 class TC_TextGL_EXPORT TC_Font {
 public:
-	TC_Font(const char *ptr);
+	TC_Font(const char *ptr = "simsun");
 	~TC_Font();
 
 	uint32_t font_size() const { return _size; }
 
 	void set_font_size(uint32_t);
+
+	void set_font_pix_size(uint32_t);
 
 	std::string file_path() const;
 

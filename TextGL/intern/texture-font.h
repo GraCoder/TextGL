@@ -26,31 +26,17 @@ extern "C" {
 #endif
 #endif
 
-/**
- * @file   texture-font.h
- * @author Nicolas Rougier (Nicolas.Rougier@inria.fr)
- *
- * @defgroup texture-font Texture font
- *
- * Texture font.
- *
- * Example Usage:
- * @code
- * #include "texture-font.h"
- *
- * int main( int arrgc, char *argv[] )
- * {
- *   return 0;
- * }
- * @endcode
- *
- * @{
- */
 
 /**
  * A list of possible ways to render a glyph.
  */
-typedef enum rendermode_t { RENDER_NORMAL, RENDER_OUTLINE_EDGE, RENDER_OUTLINE_POSITIVE, RENDER_OUTLINE_NEGATIVE, RENDER_SIGNED_DISTANCE_FIELD } rendermode_t;
+typedef enum rendermode_t {
+  RENDER_NORMAL,
+  RENDER_OUTLINE_EDGE,
+  RENDER_OUTLINE_POSITIVE,
+  RENDER_OUTLINE_NEGATIVE,
+  RENDER_SIGNED_DISTANCE_FIELD
+} rendermode_t;
 
 /**
  * Glyph array end mark type
@@ -181,12 +167,21 @@ typedef struct texture_glyph_t {
 /**
  * Enum type for texture location
  */
-typedef enum font_location_t { TEXTURE_FONT_FILE = 0, TEXTURE_FONT_MEMORY } font_location_t;
+typedef enum font_location_t {
+  TEXTURE_FONT_FILE = 0,
+  TEXTURE_FONT_MEMORY
+} font_location_t;
 
 /**
  * Enum type for automatic open/close
  */
-typedef enum font_mode_t { MODE_AUTO_CLOSE = 0, MODE_GLYPHS_CLOSE, MODE_FREE_CLOSE, MODE_MANUAL_CLOSE, MODE_ALWAYS_OPEN } font_mode_t;
+typedef enum font_mode_t {
+  MODE_AUTO_CLOSE = 0,
+  MODE_GLYPHS_CLOSE,
+  MODE_FREE_CLOSE,
+  MODE_MANUAL_CLOSE,
+  MODE_ALWAYS_OPEN
+} font_mode_t;
 /**
  * default mode for fonts
  */
@@ -416,7 +411,9 @@ extern __THREAD texture_font_library_t* freetype_gl_library;
  * @return A new empty font (no glyph inside yet)
  *
  */
-texture_font_t* texture_font_new_from_file(texture_atlas_t* atlas, const float pt_size, const char* filename);
+texture_font_t* texture_font_new_from_file(texture_atlas_t* atlas,
+                                           const float pt_size,
+                                           const char* filename);
 
 /**
  * This function creates a new texture font from a memory location and size.
@@ -433,7 +430,10 @@ texture_font_t* texture_font_new_from_file(texture_atlas_t* atlas, const float p
  * @return A new empty font (no glyph inside yet)
  *
  */
-texture_font_t* texture_font_new_from_memory(texture_atlas_t* atlas, float pt_size, const void* memory_base, size_t memory_size);
+texture_font_t* texture_font_new_from_memory(texture_atlas_t* atlas,
+                                             float pt_size,
+                                             const void* memory_base,
+                                             size_t memory_size);
 
 /**
  * Clone the freetype-gl font and set a different size
@@ -448,9 +448,11 @@ texture_font_t* texture_font_clone(texture_font_t* self, float size);
  *
  * @param self         a valid texture font
  * @param face_mode    if the mode of the face is less or equal, be done with it
- * @param library_mode if the mode of the library is less or equal, be done with it
+ * @param library_mode if the mode of the library is less or equal, be done with
+ * it
  */
-void texture_font_close(texture_font_t* self, font_mode_t face_mode, font_mode_t library_mode);
+void texture_font_close(texture_font_t* self, font_mode_t face_mode,
+                        font_mode_t library_mode);
 
 /**
  * Delete a texture font. Note that this does not delete the glyph from the
@@ -469,12 +471,15 @@ int texture_font_load_face(texture_font_t* self, float size);
  *         enough
  *
  */
-texture_glyph_t* texture_font_get_glyph(texture_font_t* self, uint32_t codepoint);
+texture_glyph_t* texture_font_get_glyph(texture_font_t* self,
+                                        uint32_t codepoint);
 
-int texture_font_index_glyph(texture_font_t* self, texture_glyph_t* glyph, uint32_t codepoint);
+int texture_font_index_glyph(texture_font_t* self, texture_glyph_t* glyph,
+                             uint32_t codepoint);
 
 uint32_t texture_font_load_glyph(texture_font_t* self, uint32_t codepoint);
-uint32_t texture_font_load_glyph_gi(texture_font_t* self, uint32_t glyph_index, uint32_t codepoint);
+uint32_t texture_font_load_glyph_gi(texture_font_t* self, uint32_t glyph_index,
+                                    uint32_t codepoint);
 
 /**
  * Request a new glyph from the font. If it has not been created yet, it will
@@ -487,12 +492,14 @@ uint32_t texture_font_load_glyph_gi(texture_font_t* self, uint32_t glyph_index, 
  *         enough
  *
  */
-texture_glyph_t* texture_font_get_glyph_gi(texture_font_t* self, uint32_t glyph_index);
+texture_glyph_t* texture_font_get_glyph_gi(texture_font_t* self,
+                                           uint32_t glyph_index);
 
 /**
  * @return A pointer on the glyph or 0 if the glyph is not loaded
  */
-texture_glyph_t* texture_font_find_glyph(texture_font_t* self, uint32_t codepoint);
+texture_glyph_t* texture_font_find_glyph(texture_font_t* self,
+                                         uint32_t codepoint);
 
 /**
  * Request the loading of several glyphs at once.
@@ -513,10 +520,11 @@ size_t texture_font_load_glyphs(texture_font_t* self, const char* codepoints);
  * @param self A valid texture font
  * @param width_new Width of the texture atlas after resizing (must be bigger
  *                  or equal to current width)
- * @param height_new Height of the texture atlas after resizing (must be bigger or
- *                   equal to current height)
+ * @param height_new Height of the texture atlas after resizing (must be bigger
+ * or equal to current height)
  */
-void texture_font_enlarge_atlas(texture_font_t* self, size_t width_new, size_t height_new);
+void texture_font_enlarge_atlas(texture_font_t* self, size_t width_new,
+                                size_t height_new);
 
 /**
  * Changes the UV Coordinates of existing glyphs in the font
@@ -533,19 +541,22 @@ void texture_font_enlarge_glyphs(texture_font_t* self, float mulw, float mulh);
  * @param self A valid texture font
  * @param width_new Width of the texture atlas after resizing (must be bigger
  *                  or equal to current width)
- * @param height_new Height of the texture atlas after resizing (must be bigger or
- *                   equal to current height)
+ * @param height_new Height of the texture atlas after resizing (must be bigger
+ * or equal to current height)
  */
-void texture_font_enlarge_texture(texture_font_t* self, size_t width_new, size_t height_new);
+void texture_font_enlarge_texture(texture_font_t* self, size_t width_new,
+                                  size_t height_new);
 /**
  * Get the kerning between two horizontal glyphs.
  *
  * @param self      A valid texture glyph
- * @param codepoint Character codepoint of the peceding character in UTF-8 encoding.
+ * @param codepoint Character codepoint of the peceding character in UTF-8
+ * encoding.
  *
  * @return x kerning value
  */
-float texture_glyph_get_kerning(const texture_glyph_t* self, const char* codepoint);
+float texture_glyph_get_kerning(const texture_glyph_t* self,
+                                const char* codepoint);
 
 texture_glyph_t* texture_glyph_new(void);
 

@@ -37,7 +37,7 @@
 
 #define HRES  64
 #define HRESf 64.f
-#define DPI   92
+#define DPI   96
 
 static float convert_F26Dot6_to_float(FT_F26Dot6 value)
 {
@@ -1089,8 +1089,7 @@ texture_font_load_glyphs(texture_font_t* self,
 }
 
 // ----------------------------------------------- texture_font_get_glyph_gi ---
-texture_glyph_t*
-texture_font_get_glyph_gi(texture_font_t* self, uint32_t glyph_index)
+texture_glyph_t* texture_font_get_glyph_gi(texture_font_t* self, uint32_t glyph_index)
 {
 	texture_glyph_t* glyph;
 
@@ -1099,11 +1098,11 @@ texture_font_get_glyph_gi(texture_font_t* self, uint32_t glyph_index)
 	assert(self->atlas);
 
 	///* Check if glyph_index has been already loaded */
-	//if ((glyph = texture_font_find_glyph_gi(self, glyph_index)))
+	// if ((glyph = texture_font_find_glyph_gi(self, glyph_index)))
 	//	return glyph;
 
 	///* Glyph has not been already loaded */
-	//if (texture_font_load_glyph_gi(self, glyph_index, glyph_index))
+	// if (texture_font_load_glyph_gi(self, glyph_index, glyph_index))
 	//	return texture_font_find_glyph_gi(self, glyph_index);
 
 	return NULL;

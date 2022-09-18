@@ -42,10 +42,11 @@ set(src_intern
 
 	intern/TC_TextureCache.h
 	intern/TC_TextureCache.cpp
-
-	intern/TC_TextureSet.h
-	intern/TC_TextureSet.cpp
 )
+
+if(OpenSceneGraph_FOUND)
+	list(APPEND src_intern intern/TC_TextNode.cpp)
+endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 source_group("intern" FILES ${src_intern})

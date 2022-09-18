@@ -9,10 +9,11 @@
 class TC_Font;
 class TC_GlyChar;
 class TC_FontTexture;
-class TC_TextureSet;
 
 struct texture_font_t;
 struct texture_glyph_t; 
+
+typedef std::vector<texture_font_t *> TC_TextureSet;
 
 class TC_TextureCache {
 public:
@@ -27,11 +28,15 @@ private:
 
 	std::shared_ptr<TC_FontTexture> make_texture(texture_font_t *);
 
+	void dirty_texture(texture_font_t *);
+
 private:
 	TC_TextureCache();
 	~TC_TextureCache();
 
-	std::map<TC_Font, std::unique_ptr<TC_TextureSet> > _cache;
+	std::map<TC_Font, TC_TextureSet> _cache;
+
+	std::map<texture_font_t *, std::shared_ptr<TC_FontTexture> > _font_textures;
 };
 
 
