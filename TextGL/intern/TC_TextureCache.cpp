@@ -6,12 +6,16 @@
 #include "texture-atlas.h"
 #include "texture-font.h"
 
-TC_TextureCache *TC_TextureCache::instance() {
+using namespace TC_TEXT;
+
+TC_TextureCache *TC_TextureCache::instance()
+{
   static TC_TextureCache ca;
   return &ca;
 }
 
-void TC_TextureCache::build(TC_GlyChar *gly_char, const TC_Font *ft) {
+void TC_TextureCache::build(TC_GlyChar *gly_char, const TC_Font *ft)
+{
   texture_font_t *tex = nullptr;
   texture_glyph_t *gly = nullptr;
   auto iter = _cache.find(*ft);
@@ -22,7 +26,7 @@ void TC_TextureCache::build(TC_GlyChar *gly_char, const TC_Font *ft) {
       if (gly) break;
     }
   } else {
-    //auto set = std::make_unique<TC_TextureSet>();
+    // auto set = std::make_unique<TC_TextureSet>();
     iter = _cache.insert(std::make_pair(*ft, TC_TextureSet())).first;
   }
 
@@ -34,7 +38,8 @@ void TC_TextureCache::build(TC_GlyChar *gly_char, const TC_Font *ft) {
   auto &texs = iter->second;
 
   bool create_tex = false;
-  if (texs.empty()) create_tex = true;
+  if (texs.empty())
+    create_tex = true;
   else {
     auto tex = texs.front();
     auto ret = texture_font_load_glyph(tex, gly_char->code());
@@ -72,29 +77,34 @@ void TC_TextureCache::build(TC_GlyChar *gly_char, const TC_Font *ft) {
   }
 }
 
-void TC_TextureCache::construct(TC_GlyChar *gly_char, texture_font_t *tex, texture_glyph_t *gly) { gly_char->_texture = make_texture(tex); }
+void TC_TextureCache::construct(TC_GlyChar *gly_char, texture_font_t *tex, texture_glyph_t *gly) 
+{ 
+    gly_char->_texture = make_texture(tex); 
+}
 
-std::shared_ptr<TC_FontTexture> 
-TC_TextureCache::make_texture(texture_font_t *tf) {
+std::shared_ptr<TC_FontTexture> TC_TextureCache::make_texture(texture_font_t *tf)
+{
   auto iter = _font_textures.find(tf);
-  if (iter != _font_textures.end()) return iter->second;
+  if (iter != _font_textures.end())
+    return iter->second;
   else {
     auto tex = std::make_shared<TC_FontTexture>();
     tex->_width = tf->atlas->width;
     tex->_height = tf->atlas->height;
     tex->_data = tf->atlas->data;
+    _font_textures[tf] = tex;
     return tex;
   }
   return 0;
 }
 
-void TC_TextureCache::dirty_texture(texture_font_t *tex) 
+void TC_TextureCache::dirty_texture(texture_font_t *tex)
 {
-    auto iter = _font_textures.find(tex);
-    if(iter == _font_textures.end()) {
-        //error
-    }
-    iter->second->set_dirty();
+  auto iter = _font_textures.find(tex);
+  if (iter == _font_textures.end()) {
+    // error
+  }
+  iter->second->set_dirty();
 }
 
 TC_TextureCache::TC_TextureCache() {}

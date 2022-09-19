@@ -7,10 +7,14 @@
 #include "TC_Font.h"
 #include "TC_GlyChar.h"
 
+namespace TC_TEXT{
+
 class TC_TextGL_EXPORT TC_GlyText {
- public:
+public:
   TC_GlyText();
   ~TC_GlyText();
+
+  const TC_Font &font() { return _font; };
 
   void set_font(const TC_Font &ft) { _font = ft; }
 
@@ -20,11 +24,12 @@ class TC_TextGL_EXPORT TC_GlyText {
 
   std::vector<TC_GlyChar> get_chars();
 
- private:
-
+private:
   TC_Font _font;
 
   std::vector<uint32_t> _text;
 };
+
+}
 
 #endif

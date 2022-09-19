@@ -12,8 +12,9 @@
 
 #include <Windows.h>
 
-GLWidget::GLWidget() 
-: _viewer(nullptr) { setMinimumSize(600, 400);
+GLWidget::GLWidget() : _viewer(nullptr)
+{
+  setMinimumSize(600, 400);
   auto timer = new QTimer(this);
   connect(timer, &QTimer::timeout, this, &GLWidget::render);
   timer->start(30);
@@ -21,13 +22,15 @@ GLWidget::GLWidget()
 
 GLWidget::~GLWidget() {}
 
-osg::Group* GLWidget::getRoot() { return dynamic_cast<osg::Group *>(_viewer->getSceneData()); }
+osg::Group* GLWidget::getRoot() { return dynamic_cast<osg::Group*>(_viewer->getSceneData()); }
 
-void GLWidget::render() {
+void GLWidget::render()
+{
   if (_viewer) _viewer->frame();
 }
 
-void GLWidget::resizeEvent(QResizeEvent* ev) {
+void GLWidget::resizeEvent(QResizeEvent* ev)
+{
   Base::resizeEvent(ev);
 
   if (!_viewer) {
@@ -47,7 +50,8 @@ void GLWidget::resizeEvent(QResizeEvent* ev) {
   if (handle) MoveWindow(handle->getHWND(), 0, 0, w, h, true);
 }
 
-void GLWidget::createViewer() {
+void GLWidget::createViewer()
+{
   _viewer = new osgViewer::Viewer;
   _viewer->setThreadingModel(_viewer->SingleThreaded);
   //_viewer->setCameraManipulator(new osgGA::TrackballManipulator());
@@ -88,7 +92,7 @@ void GLWidget::createViewer() {
 
   auto root = new osg::Group;
   _viewer->setSceneData(root);
-  root->getOrCreateStateSet()->setMode( GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
+  root->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
   {
     auto testNode = osgDB::readNodeFile("D:\\08_Store\\OpenSceneGraph-Data\\cow.osg");
     root->addChild(testNode);

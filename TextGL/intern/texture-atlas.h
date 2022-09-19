@@ -119,7 +119,6 @@ typedef struct texture_atlas_t {
 
 } texture_atlas_t;
 
-
 texture_atlas_t* texture_atlas_new(const size_t width, const size_t height, const size_t depth);
 
 void texture_atlas_delete(texture_atlas_t* self);

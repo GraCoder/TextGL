@@ -23,7 +23,7 @@ private:
 
 	QPlainTextEdit *_log = nullptr;
 
-	TC_Font _ft;
+	TC_TEXT::TC_Font _ft;
 
 	GLWidget *_gl_widget;
 };

@@ -16,7 +16,8 @@
 
 // -------------------------------------------------- texture_atlas_special ---
 
-void texture_atlas_special(texture_atlas_t* self) {
+void texture_atlas_special(texture_atlas_t* self)
+{
   ivec4 region = texture_atlas_get_region(self, 5, 5);
   texture_glyph_t* glyph = texture_glyph_new();
   static unsigned char data[4 * 4 * 3] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -36,7 +37,8 @@ void texture_atlas_special(texture_atlas_t* self) {
 }
 
 // ------------------------------------------------------ texture_atlas_new ---
-texture_atlas_t* texture_atlas_new(const size_t width, const size_t height, const size_t depth) {
+texture_atlas_t* texture_atlas_new(const size_t width, const size_t height, const size_t depth)
+{
   texture_atlas_t* self = (texture_atlas_t*)malloc(sizeof(texture_atlas_t));
 
   // We want a one pixel border around the whole atlas to avoid any artefact when
@@ -71,7 +73,8 @@ texture_atlas_t* texture_atlas_new(const size_t width, const size_t height, cons
 }
 
 // --------------------------------------------------- texture_atlas_delete ---
-void texture_atlas_delete(texture_atlas_t* self) {
+void texture_atlas_delete(texture_atlas_t* self)
+{
   assert(self);
   vector_delete(self->nodes);
   texture_glyph_delete(self->special);
@@ -81,7 +84,8 @@ void texture_atlas_delete(texture_atlas_t* self) {
   free(self);
 }
 
-int texture_atlas_fit(texture_atlas_t* self, const size_t index, const size_t width, const size_t height) {
+int texture_atlas_fit(texture_atlas_t* self, const size_t index, const size_t width, const size_t height)
+{
   ivec3* node;
   int x, y, width_left;
   size_t i;
@@ -112,7 +116,7 @@ int texture_atlas_fit(texture_atlas_t* self, const size_t index, const size_t wi
   return y;
 }
 
-int texture_atlas_has_space(texture_atlas_t* self, size_t width, size_t height) 
+int texture_atlas_has_space(texture_atlas_t* self, size_t width, size_t height)
 {
   for (int i = 0; i < self->nodes->size; ++i) {
     int y = texture_atlas_fit(self, i, width, height);
@@ -122,7 +126,8 @@ int texture_atlas_has_space(texture_atlas_t* self, size_t width, size_t height)
 }
 
 void texture_atlas_set_region(texture_atlas_t* self, const size_t x, const size_t y, const size_t width, const size_t height, const unsigned char* data,
-                              const size_t stride) {
+                              const size_t stride)
+{
   size_t i;
   size_t depth;
   size_t charsize;
@@ -148,7 +153,8 @@ void texture_atlas_set_region(texture_atlas_t* self, const size_t x, const size_
 }
 
 // ---------------------------------------------------- texture_atlas_merge ---
-void texture_atlas_merge(texture_atlas_t* self) {
+void texture_atlas_merge(texture_atlas_t* self)
+{
   ivec3 *node, *next;
   size_t i;
 
@@ -166,7 +172,8 @@ void texture_atlas_merge(texture_atlas_t* self) {
 }
 
 // ----------------------------------------------- texture_atlas_get_region ---
-ivec4 texture_atlas_get_region(texture_atlas_t* self, const size_t width, const size_t height) {
+ivec4 texture_atlas_get_region(texture_atlas_t* self, const size_t width, const size_t height)
+{
   int y, best_index;
   size_t best_height, best_width;
   ivec3 *node, *prev;
@@ -237,7 +244,8 @@ ivec4 texture_atlas_get_region(texture_atlas_t* self, const size_t width, const 
 }
 
 // ---------------------------------------------------- texture_atlas_clear ---
-void texture_atlas_clear(texture_atlas_t* self) {
+void texture_atlas_clear(texture_atlas_t* self)
+{
   ivec3 node = {{1, 1, 1}};
 
   assert(self);
@@ -255,7 +263,8 @@ void texture_atlas_clear(texture_atlas_t* self) {
 
 // -------------------------------------------- texture_atlas_enlarge_atlas ---
 
-void texture_atlas_enlarge_texture(texture_atlas_t* self, size_t width_new, size_t height_new) {
+void texture_atlas_enlarge_texture(texture_atlas_t* self, size_t width_new, size_t height_new)
+{
   assert(self);
   // ensure size increased
   assert(width_new >= self->width);

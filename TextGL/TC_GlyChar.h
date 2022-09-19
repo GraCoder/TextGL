@@ -5,33 +5,34 @@
 
 #include "TC_Font.h"
 
+namespace TC_TEXT{
+
 class TC_Font;
 class TC_FontTexture;
 
 class TC_TextGL_EXPORT TC_GlyChar {
-	friend class TC_TextureCache;
+  friend class TC_TextureCache;
+
 public:
-	TC_GlyChar(uint32_t code);
-	~TC_GlyChar();
+  TC_GlyChar(uint32_t code);
+  ~TC_GlyChar();
 
-	inline uint32_t code() { return _code; }
+  inline uint32_t code() { return _code; }
 
-	void build(const TC_Font &);
+  void build(const TC_Font &);
 
-	std::shared_ptr<TC_FontTexture> get_texture() { return _texture; }
+  std::shared_ptr<TC_FontTexture> get_texture() { return _texture; }
 
 private:
+  uint32_t _code;
 
+  union {
+  };
+  uint32_t x = 0, y = 0, w = 0, h = 0;
 
-	uint32_t _code;
-
-	union {
-
-	};
-	uint32_t x = 0, y = 0, w = 0, h = 0;
-
-	std::shared_ptr<TC_FontTexture> _texture;
+  std::shared_ptr<TC_FontTexture> _texture;
 };
 
+}
 
 #endif
