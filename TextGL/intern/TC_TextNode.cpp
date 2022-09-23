@@ -5,18 +5,19 @@
 
 namespace TC_TEXT{
 
-TC_TextNode::TC_TextNode() { setUseVertexArrayObject(false); }
+TC_TextNode::TC_TextNode()
+{
+  //setUseVertexArrayObject(false);
+  initArraysAndBuffers();
+}
 
 TC_TextNode::~TC_TextNode() {}
 
 void TC_TextNode::drawImplementation(osg::RenderInfo& renderInfo) const
 {
-  osg::Vec4f colorMultiplier(1., 1., 1., 1.);
-
   auto& state = *renderInfo.getState();
   osg::Matrix previous_modelview = state.getModelViewMatrix();
 
-  // set up the new modelview matrix
   osg::Matrix modelview;
   bool needToApplyMatrix = false;
   // needToApplyMatrix = computeMatrix(modelview, &state);
@@ -42,16 +43,16 @@ void TC_TextNode::drawImplementation(osg::RenderInfo& renderInfo) const
   bool usingVertexBufferObjects = state.useVertexBufferObject(_supportsVertexBufferObjects && _useVertexBufferObjects);
   bool usingVertexArrayObjects = usingVertexBufferObjects && state.useVertexArrayObject(_useVertexArrayObject);
   bool requiresSetArrays = !usingVertexBufferObjects || !usingVertexArrayObjects || vas->getRequiresSetArrays();
+  //vas->setVertexBufferObjectSupported(usingVertexBufferObjects);
 
-  if (requiresSetArrays) {
-    vas->lazyDisablingOfVertexAttributes();
-    vas->setVertexArray(state, _coords.get());
-    vas->setTexCoordArray(state, 0, _texcoords.get());
-    vas->applyDisablingOfVertexAttributes(state);
-  }
+  //vas->lazyDisablingOfVertexAttributes();
+  vas->setVertexArray(state, _vertexs.get());
+  vas->setTexCoordArray(state, 0, _uvs.get());
+  vas->applyDisablingOfVertexAttributes(state);
 
   glDepthMask(GL_FALSE);
 
+  osg::Vec4f colorMultiplier(1., 1., 1., 1.);
   drawImplementationSinglePass(state, colorMultiplier);
 
   // if (_enableDepthWrites) {
@@ -89,16 +90,39 @@ void TC_TextNode::setText(TC_GlyText& text)
 { auto &ft = text.font();
   auto sz = ft.font_size();
   
-  if (_coords == nullptr) _coords = new osg::Vec3Array;
-
-  _coords->clear();
-  _coords->push_back(osg::Vec3d(0, 0, 0));
-  _coords->push_back(osg::Vec3d(0, sz, 0));
   auto chars = text.get_chars();
   for(int i = 0; i < chars.size(); i++){
-    _coords->push_back(osg::Vec3d(sz * (i + 1), 0, 0));
-    _coords->push_back(osg::Vec3d(sz * (i + 1), sz, 0));
+    _vertexs->push_back(osg::Vec3f(sz * i, sz, 0));
+    _vertexs->push_back(osg::Vec3f(sz * i, 0, 0));
+    _vertexs->push_back(osg::Vec3f(sz * (i + 1), 0, 0));
+    _vertexs->push_back(osg::Vec3f(sz * (i + 1), sz, 0));
+
+    _uvs->push_back(osg::Vec2f(0, 0));
+    _uvs->push_back(osg::Vec2f(0, 0));
+    _uvs->push_back(osg::Vec2f(0, 0));
+    _uvs->push_back(osg::Vec2f(0, 0));
   }
+
+  dirtyGLObjects();
+  fillVertexAttribute();
+}
+
+void TC_TextNode::initArraysAndBuffers() 
+{
+  _vbo = new osg::VertexBufferObject;
+  _ebo = new osg::ElementBufferObject;
+
+  _vertexs = new osg::Vec3Array(osg::Array::BIND_PER_VERTEX);
+  _normals = new osg::Vec3Array(osg::Array::BIND_PER_VERTEX);
+  _uvs = new osg::Vec2Array(osg::Array::BIND_PER_VERTEX);
+
+  _vertexs->setBufferObject(_vbo.get());
+  //_normals->setBufferObject(_vbo.get());
+  _uvs->setBufferObject(_vbo.get());
+}
+
+void TC_TextNode::fillVertexAttribute() {
+
 }
 
 void TC_TextNode::drawImplementationSinglePass(osg::State& state, const osg::Vec4& colorMultiplier) const
@@ -110,52 +134,87 @@ void TC_TextNode::drawImplementationSinglePass(osg::State& state, const osg::Vec
   bool usingVertexArrayObjects = usingVertexBufferObjects && state.useVertexArrayObject(_useVertexArrayObject);
   bool requiresSetArrays = !usingVertexBufferObjects || !usingVertexArrayObjects || vas->getRequiresSetArrays();
 
-  //  if ((_drawMode & (~TEXT)) != 0 && !_decorationPrimitives.empty()) {
-  //#if defined(OSG_GL_FIXED_FUNCTION_AVAILABLE)
-  //    state.applyTextureMode(0, GL_TEXTURE_2D, osg::StateAttribute::OFF);
-  //#endif
-  //    vas->disableColorArray(state);
-  //    for (Primitives::const_iterator itr = _decorationPrimitives.begin();
-  //         itr != _decorationPrimitives.end(); ++itr) {
-  //      if ((*itr)->getMode() == GL_TRIANGLES)
-  //        state.Color(colorMultiplier.r() * _textBBColor.r(),
-  //                    colorMultiplier.g() * _textBBColor.g(),
-  //                    colorMultiplier.b() * _textBBColor.b(),
-  //                    colorMultiplier.a() * _textBBColor.a());
-  //      else
-  //        state.Color(colorMultiplier.r(), colorMultiplier.g(),
-  //                    colorMultiplier.b(), colorMultiplier.a());
-  //
-  //      (*itr)->draw(state, usingVertexBufferObjects);
-  //    }
-  //#if defined(OSG_GL_FIXED_FUNCTION_AVAILABLE)
-  //    state.applyTextureMode(0, GL_TEXTURE_2D, osg::StateAttribute::ON);
-  //#endif
-  //  }
-  //
-  //  if (_drawMode & TEXT) {
-  //    for (TextureGlyphQuadMap::const_iterator titr =
-  //             _textureGlyphQuadMap.begin();
-  //         titr != _textureGlyphQuadMap.end(); ++titr) {
-  //      // need to set the texture here...
-  //      state.applyTextureAttribute(0, titr->first.get());
-  //
-  //      const GlyphQuads& glyphquad = titr->second;
-  //
-  //      if (_colorGradientMode == SOLID) {
-  //        vas->disableColorArray(state);
-  //        state.Color(
-  //            colorMultiplier.r() * _color.r(), colorMultiplier.g() * _color.g(),
-  //            colorMultiplier.b() * _color.b(), colorMultiplier.a() * _color.a());
-  //      } else {
-  //        if (requiresSetArrays) {
-  //          vas->setColorArray(state, _colorCoords.get());
-  //        }
-  //      }
-  //
-  //      glyphquad._primitives->draw(state, usingVertexBufferObjects);
-  //    }
-  //  }
 }
 
+void TC_TextNode::drawVertexArraysImplementation(osg::RenderInfo& renderInfo) const {}
+
+osg::VertexArrayState* TC_TextNode::createVertexArrayStateImplementation(osg::RenderInfo& renderInfo, const osg::Drawable* drawable) const
+{
+  auto& state = *renderInfo.getState();
+
+  auto* vas = new osg::VertexArrayState(&state);
+
+  // OSG_NOTICE<<"Creating new osg::VertexArrayState "<< vas<<std::endl;
+
+  if (_vertexs.valid())
+    vas->assignVertexArrayDispatcher();
+  if (_normals.valid())
+    vas->assignNormalArrayDispatcher();
+
+  if (_uvs.valid())
+    vas->assignTexCoordArrayDispatcher(1);
+
+  if (state.useVertexArrayObject(_useVertexArrayObject)) {
+    OSG_INFO << "TextBase::createVertexArrayState() Setup VertexArrayState to use VAO " << vas << std::endl;
+
+    vas->generateVertexArrayObject();
+  } else {
+    OSG_INFO << "TextBase::createVertexArrayState() Setup VertexArrayState to without using VAO " << vas << std::endl;
+  }
+
+  return vas;
 }
+
+void TC_TextNode::compileGLObjects(osg::RenderInfo& renderInfo) const
+{
+  using namespace osg;
+  State& state = *renderInfo.getState();
+  if (renderInfo.getState()->useVertexBufferObject(_supportsVertexBufferObjects && _useVertexBufferObjects)) {
+    unsigned int contextID = state.getContextID();
+    GLExtensions* extensions = state.get<GLExtensions>();
+    if (state.useVertexArrayObject(_useVertexArrayObject)) {
+      VertexArrayState* vas = 0;
+
+      _vertexArrayStateList[contextID] = vas = createVertexArrayState(renderInfo);
+
+      State::SetCurrentVertexArrayStateProxy setVASProxy(state, vas);
+
+      state.bindVertexArrayObject(vas);
+
+      drawImplementation(renderInfo);
+
+      state.unbindVertexArrayObject();
+    } else {
+      drawImplementation(renderInfo);
+    }
+
+    // unbind the BufferObjects
+    extensions->glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    extensions->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+  }
+}
+
+void TC_TextNode::resizeGLObjectBuffers(unsigned int maxSize) {
+  if (_vertexs.valid())
+    _vertexs->resizeGLObjectBuffers(maxSize);
+  if (_uvs.valid())
+    _uvs->resizeGLObjectBuffers(maxSize);
+}
+
+void TC_TextNode::releaseGLObjects(osg::State* state) const
+{
+  if (_vertexs.valid())
+    _vertexs->releaseGLObjects(state);
+  if (_uvs.valid())
+    _uvs->releaseGLObjects(state);
+}
+
+void TC_TextNode::dirtyGLObjects()
+{
+  Base::dirtyGLObjects();
+
+  _vertexs->dirty();
+  _uvs->dirty();
+}
+
+}  // namespace TC_TEXT

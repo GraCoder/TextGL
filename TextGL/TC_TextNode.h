@@ -10,7 +10,8 @@ namespace TC_TEXT{
 class TC_GlyText;
 
 class TC_TextGL_EXPORT TC_TextNode : public osg::Drawable {
-public:
+  typedef osg::Drawable Base;
+ public:
   TC_TextNode();
 
   void drawImplementation(osg::RenderInfo& renderInfo) const;
@@ -30,22 +31,37 @@ public:
 private:
   ~TC_TextNode();
 
-  typedef osg::ref_ptr<osg::Vec3Array> Coords;
-  typedef osg::ref_ptr<osg::Vec2Array> TexCoords;
-  typedef osg::ref_ptr<osg::Vec4Array> ColorCoords;
+  typedef osg::ref_ptr<osg::Vec3Array> V3Array;
+  typedef osg::ref_ptr<osg::Vec2Array> V2Array;
 
-  Coords& getCoords() { return _coords; }
-  const Coords& getCoords() const { return _coords; }
+  V3Array& getCoords() { return _vertexs; }
+  const V3Array& getCoords() const { return _vertexs; }
+
+  void initArraysAndBuffers();
+
+  void fillVertexAttribute();
 
   void drawImplementationSinglePass(osg::State& state, const osg::Vec4& colorMultiplier) const;
+
+  void drawVertexArraysImplementation(osg::RenderInfo& renderInfo) const;
+
+  osg::VertexArrayState* createVertexArrayStateImplementation(osg::RenderInfo& renderInfo, const osg::Drawable* drawable) const;
+
+  void compileGLObjects(osg::RenderInfo& renderInfo) const override;
+
+  void resizeGLObjectBuffers(unsigned int maxSize) override;
+
+  void releaseGLObjects(osg::State* state = 0) const override;
+
+  void dirtyGLObjects() override;
 
   osg::ref_ptr<osg::VertexBufferObject> _vbo;
   osg::ref_ptr<osg::ElementBufferObject> _ebo;
 
-  Coords _coords;
-  Coords _normals;
+  V3Array _vertexs;
+  V3Array _normals;
   // ColorCoords _colorCoords;
-  TexCoords _texcoords;
+  V2Array _uvs;
 };
 
 }
