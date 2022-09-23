@@ -9,6 +9,8 @@ TC_TextNode::TC_TextNode()
 {
   //setUseVertexArrayObject(false);
   initArraysAndBuffers();
+
+  setCullingActive(false);
 }
 
 TC_TextNode::~TC_TextNode() {}
@@ -138,7 +140,7 @@ void TC_TextNode::drawImplementationSinglePass(osg::State& state, const osg::Vec
 
 void TC_TextNode::drawVertexArraysImplementation(osg::RenderInfo& renderInfo) const {}
 
-osg::VertexArrayState* TC_TextNode::createVertexArrayStateImplementation(osg::RenderInfo& renderInfo, const osg::Drawable* drawable) const
+osg::VertexArrayState* TC_TextNode::createVertexArrayStateImplementation(osg::RenderInfo& renderInfo) const
 {
   auto& state = *renderInfo.getState();
 

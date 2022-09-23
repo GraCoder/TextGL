@@ -45,7 +45,7 @@ private:
 
   void drawVertexArraysImplementation(osg::RenderInfo& renderInfo) const;
 
-  osg::VertexArrayState* createVertexArrayStateImplementation(osg::RenderInfo& renderInfo, const osg::Drawable* drawable) const;
+  osg::VertexArrayState* createVertexArrayStateImplementation(osg::RenderInfo& renderInfo) const override;
 
   void compileGLObjects(osg::RenderInfo& renderInfo) const override;
 
