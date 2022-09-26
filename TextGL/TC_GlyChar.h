@@ -26,9 +26,17 @@ public:
 private:
   uint32_t _code;
 
-  union {
-  };
-  uint32_t x = 0, y = 0, w = 0, h = 0;
+  int _padding;
+
+  float _advance;
+  
+  float _offsetx, _offsety;
+
+  float _height;
+
+  //float _ascender, _descender;
+
+  float _ltu, _ltv, _rbu, _rbv;
 
   std::shared_ptr<TC_FontTexture> _texture;
 };
