@@ -79,15 +79,17 @@ void TC_TextureCache::build(TC_GlyChar *gly_char, const TC_Font *ft)
 
 void TC_TextureCache::construct(TC_GlyChar *gly_char, texture_font_t *tex, texture_glyph_t *gly) 
 { 
-    gly_char->_texture = make_texture(tex); 
     gly_char->_padding = tex->padding;
-    gly_char->_advance = gly->advance_x;
+    gly_char->_advance = gly->advance_x / 64.0;
     gly_char->_offsetx = gly->offset_x;
     gly_char->_offsety = gly->offset_y;
+    gly_char->_width = gly->width;
     gly_char->_height = gly->height;
 
     gly_char->_ltu = gly->s0; gly_char->_ltv = gly->t0;
     gly_char->_rbu = gly->s1; gly_char->_rbv = gly->t1;
+
+    gly_char->_texture = make_texture(tex); 
 }
 
 std::shared_ptr<TC_FontTexture> TC_TextureCache::make_texture(texture_font_t *tf)

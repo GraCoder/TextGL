@@ -23,7 +23,18 @@ public:
 
   std::shared_ptr<TC_FontTexture> get_texture() { return _texture; }
 
-private:
+  inline float andvance() { return _advance; }
+
+  inline float width() { return _width; }
+
+  inline float height() { return _height; }
+
+  inline std::pair<float, float> offset() { return std::make_pair(_offsetx, _offsety); }
+  
+  inline std::pair<float, float> tex_lt_coord() { return std::make_pair(_ltu, _ltv); }
+
+  inline std::pair<float, float> tex_rb_coord() { return std::make_pair(_rbu, _rbv); }
+ private:
   uint32_t _code;
 
   int _padding;
@@ -32,7 +43,7 @@ private:
   
   float _offsetx, _offsety;
 
-  float _height;
+  float _width, _height;
 
   //float _ascender, _descender;
 

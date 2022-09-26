@@ -91,39 +91,57 @@ void TC_TextNode::accept(osg::Drawable::ConstAttributeFunctor& af) const {}
 
 void TC_TextNode::accept(osg::PrimitiveFunctor& pf) const {}
 
-void TC_TextNode::setText(TC_GlyText& text) 
-{ auto &ft = text.font();
+void TC_TextNode::setText(TC_GlyText& text)
+{
+  auto& ft = text.font();
   auto sz = ft.font_size();
-  
+
+  auto ss = getOrCreateStateSet();
   auto chars = text.get_chars();
-  std::sort(chars.begin(), chars.end(), 
-      [](TC_GlyChar &char1, TC_GlyChar &char2)->bool {
-          return char1.get_texture() < char2.get_texture();
-      });
   auto ele = static_cast<osg::DrawElementsUShort*>(_elems.get());
   ele->clear();
-  for(int i = 0; i < chars.size(); i++){
-    _vertexs->push_back(osg::Vec3f(sz * i, sz, 0));
-    _vertexs->push_back(osg::Vec3f(sz * i, 0, 0));
-    _vertexs->push_back(osg::Vec3f(sz * (i + 1), 0, 0));
-    _vertexs->push_back(osg::Vec3f(sz * (i + 1), sz, 0));
+  float width = 0, height = 0;
+  for (int i = 0; i < chars.size(); i++) {
+    auto& ch = chars[i];
+    if (ch.height() > height) height = ch.height(); 
+    width += ch.width();
 
-    _uvs->push_back(osg::Vec2f(0, 1));
-    _uvs->push_back(osg::Vec2f(0, 0));
-    _uvs->push_back(osg::Vec2f(1, 0));
-    _uvs->push_back(osg::Vec2f(1, 1));
+    auto lt = ch.tex_lt_coord();
+    auto rb = ch.tex_rb_coord();
+    _uvs->push_back(osg::Vec2f(lt.first, lt.second));
+    _uvs->push_back(osg::Vec2f(lt.first, rb.second));
+    _uvs->push_back(osg::Vec2f(rb.first, rb.second));
+    _uvs->push_back(osg::Vec2f(rb.first, lt.second));
 
     uint16_t idx = i * 4;
     ele->push_back(idx); ele->push_back(idx + 1); ele->push_back(idx + 2);
     ele->push_back(idx); ele->push_back(idx + 2); ele->push_back(idx + 3);
 
     auto tex = build_tex(chars[i].get_texture());
+    ss->setTextureAttributeAndModes(0, tex.get(), 1);
   }
+
+  std::sort(chars.begin(), chars.end(), [](TC_GlyChar& char1, TC_GlyChar& char2) -> bool { return char1.get_texture() < char2.get_texture(); });
+
+  width = 0;
+  height = 0;
+  _vertexs->clear();
+  for(int i = 0; i < chars.size(); i++){
+    auto &ch = chars[i];
+    auto oft = ch.offset();
+    auto x = width + oft.first;
+    _vertexs->push_back(osg::Vec3f(x, oft.second, 0));
+    _vertexs->push_back(osg::Vec3f(x, oft.second - ch.height(), 0));
+    _vertexs->push_back(osg::Vec3f(x + ch.width(), oft.second - ch.height(), 0));
+    _vertexs->push_back(osg::Vec3f(x + ch.width(), oft.second, 0));
+    width += ch.andvance();
+  }
+
   dirtyGLObjects();
   fillVertexAttribute();
 
   _initialBoundingBox._min.set(0, 0, 0);
-  _initialBoundingBox._max.set(sz * chars.size() , sz, 0.01);
+  _initialBoundingBox._max.set(sz * chars.size(), sz, 0.01);
 }
 
 void TC_TextNode::initArraysAndBuffers() 
