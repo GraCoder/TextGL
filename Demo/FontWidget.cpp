@@ -127,9 +127,6 @@ void FontWidget::update_text()
 {
   std::vector<uint32_t> codes;
   auto str = _edit->toPlainText();
-  if (str.isEmpty())
-    str = "ABC";
-
   for (int i = 0; i < str.size(); i++) {
     auto ch = str[i];
     codes.push_back(ch.unicode());
@@ -150,7 +147,7 @@ void FontWidget::update_text()
 
   auto root = _gl_widget->getRoot();
   if (root) {
-    root->removeChildren(0, root->getNumChildren());
+    root->removeChildren(1, root->getNumChildren());
     auto node = new TC_TEXT::TC_TextNode;
     node->setText(tex);
     root->addChild(node);

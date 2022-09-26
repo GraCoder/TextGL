@@ -2,12 +2,14 @@
 #define _TC_TEXT_NODE_INC_
 
 #include <osg/Drawable>
+#include <osg/Texture2D>
 
 #include "TC_Font.h"
 
 namespace TC_TEXT{
 
 class TC_GlyText;
+class TC_FontTexture;
 
 class TC_TextGL_EXPORT TC_TextNode : public osg::Drawable {
   typedef osg::Drawable Base;
@@ -55,6 +57,9 @@ private:
 
   void dirtyGLObjects() override;
 
+  static osg::ref_ptr<osg::Texture2D> build_tex(std::shared_ptr<TC_FontTexture> tex);
+
+private:
   osg::ref_ptr<osg::VertexBufferObject> _vbo;
   osg::ref_ptr<osg::ElementBufferObject> _ebo;
 
@@ -62,6 +67,8 @@ private:
   V3Array _normals;
   // ColorCoords _colorCoords;
   V2Array _uvs;
+
+  osg::ref_ptr<osg::DrawElements> _elems;
 };
 
 }

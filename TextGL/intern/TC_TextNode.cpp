@@ -1,9 +1,16 @@
 #include "TC_TextNode.h"
+
+#include <algorithm>
+#include <osg/PrimitiveSet>
+
 #include "TC_GlyText.h"
+#include "TC_FontTexture.h"
 
 #pragma comment(lib, "Opengl32.lib")
 
 namespace TC_TEXT{
+
+static std::map<std::shared_ptr<TC_FontTexture>, osg::ref_ptr<osg::Texture2D>> _texs;
 
 TC_TextNode::TC_TextNode()
 {
@@ -44,13 +51,9 @@ void TC_TextNode::drawImplementation(osg::RenderInfo& renderInfo) const
   osg::VertexArrayState* vas = state.getCurrentVertexArrayState();
   bool usingVertexBufferObjects = state.useVertexBufferObject(_supportsVertexBufferObjects && _useVertexBufferObjects);
   bool usingVertexArrayObjects = usingVertexBufferObjects && state.useVertexArrayObject(_useVertexArrayObject);
-  bool requiresSetArrays = !usingVertexBufferObjects || !usingVertexArrayObjects || vas->getRequiresSetArrays();
-  //vas->setVertexBufferObjectSupported(usingVertexBufferObjects);
+  vas->setVertexBufferObjectSupported(usingVertexBufferObjects);
 
-  //vas->lazyDisablingOfVertexAttributes();
-  vas->setVertexArray(state, _vertexs.get());
-  vas->setTexCoordArray(state, 0, _uvs.get());
-  vas->applyDisablingOfVertexAttributes(state);
+  drawVertexArraysImplementation(renderInfo);
 
   glDepthMask(GL_FALSE);
 
@@ -93,20 +96,34 @@ void TC_TextNode::setText(TC_GlyText& text)
   auto sz = ft.font_size();
   
   auto chars = text.get_chars();
+  std::sort(chars.begin(), chars.end(), 
+      [](TC_GlyChar &char1, TC_GlyChar &char2)->bool {
+          return char1.get_texture() < char2.get_texture();
+      });
+  auto ele = static_cast<osg::DrawElementsUShort*>(_elems.get());
+  ele->clear();
   for(int i = 0; i < chars.size(); i++){
     _vertexs->push_back(osg::Vec3f(sz * i, sz, 0));
     _vertexs->push_back(osg::Vec3f(sz * i, 0, 0));
     _vertexs->push_back(osg::Vec3f(sz * (i + 1), 0, 0));
     _vertexs->push_back(osg::Vec3f(sz * (i + 1), sz, 0));
 
+    _uvs->push_back(osg::Vec2f(0, 1));
     _uvs->push_back(osg::Vec2f(0, 0));
-    _uvs->push_back(osg::Vec2f(0, 0));
-    _uvs->push_back(osg::Vec2f(0, 0));
-    _uvs->push_back(osg::Vec2f(0, 0));
-  }
+    _uvs->push_back(osg::Vec2f(1, 0));
+    _uvs->push_back(osg::Vec2f(1, 1));
 
+    uint16_t idx = i * 4;
+    ele->push_back(idx); ele->push_back(idx + 1); ele->push_back(idx + 2);
+    ele->push_back(idx); ele->push_back(idx + 2); ele->push_back(idx + 3);
+
+    auto tex = build_tex(chars[i].get_texture());
+  }
   dirtyGLObjects();
   fillVertexAttribute();
+
+  _initialBoundingBox._min.set(0, 0, 0);
+  _initialBoundingBox._max.set(sz * chars.size() , sz, 0.01);
 }
 
 void TC_TextNode::initArraysAndBuffers() 
@@ -121,6 +138,10 @@ void TC_TextNode::initArraysAndBuffers()
   _vertexs->setBufferObject(_vbo.get());
   //_normals->setBufferObject(_vbo.get());
   _uvs->setBufferObject(_vbo.get());
+
+
+  _elems = new osg::DrawElementsUShort(GL_TRIANGLES); 
+  _elems->setBufferObject(_ebo);
 }
 
 void TC_TextNode::fillVertexAttribute() {
@@ -136,9 +157,30 @@ void TC_TextNode::drawImplementationSinglePass(osg::State& state, const osg::Vec
   bool usingVertexArrayObjects = usingVertexBufferObjects && state.useVertexArrayObject(_useVertexArrayObject);
   bool requiresSetArrays = !usingVertexBufferObjects || !usingVertexArrayObjects || vas->getRequiresSetArrays();
 
+
+  _elems->draw(state, true);
 }
 
-void TC_TextNode::drawVertexArraysImplementation(osg::RenderInfo& renderInfo) const {}
+void TC_TextNode::drawVertexArraysImplementation(osg::RenderInfo& renderInfo) const
+{
+  using namespace osg;
+  State& state = *renderInfo.getState();
+  VertexArrayState* vas = state.getCurrentVertexArrayState();
+  AttributeDispatchers& attributeDispatchers = state.getAttributeDispatchers();
+
+  attributeDispatchers.reset();
+  attributeDispatchers.setUseVertexAttribAlias(state.getUseVertexAttributeAliasing());
+
+  if (state.useVertexArrayObject(_useVertexArrayObject)) {
+    if (!vas->getRequiresSetArrays()) return;
+  }
+
+  vas->lazyDisablingOfVertexAttributes();
+  if (_vertexs.valid()) vas->setVertexArray(state, _vertexs.get());
+  if (_uvs.valid()) vas->setTexCoordArray(state, 0, _uvs.get());
+  // if (_normalArray.valid() && _normalArray->getBinding() == osg::Array::BIND_PER_VERTEX) vas->setNormalArray(state, _normalArray.get());
+  vas->applyDisablingOfVertexAttributes(state);
+}
 
 osg::VertexArrayState* TC_TextNode::createVertexArrayStateImplementation(osg::RenderInfo& renderInfo) const
 {
@@ -217,6 +259,22 @@ void TC_TextNode::dirtyGLObjects()
 
   _vertexs->dirty();
   _uvs->dirty();
+
+  _elems->dirty();
+}
+
+osg::ref_ptr<osg::Texture2D> TC_TextNode::build_tex(std::shared_ptr<TC_FontTexture> tex)
+{
+  auto iter = _texs.find(tex);
+  if (iter != _texs.end())
+    return iter->second;
+  auto ret = new osg::Texture2D;
+  auto img = new osg::Image;
+  auto sz = tex->get_size();
+  img->setImage(sz.first, sz.second, 1, GL_RED, GL_RED, GL_UNSIGNED_BYTE, tex->data(), osg::Image::NO_DELETE);
+  ret->setImage(img);
+  _texs[tex] = ret;
+  return ret;
 }
 
 }  // namespace TC_TEXT

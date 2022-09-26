@@ -21,6 +21,7 @@ public:
 
   inline std::pair<uint32_t, uint32_t> get_size() { return std::make_pair(_width, _height); };
 
+  inline uint8_t* data() { return _data; }
   inline const uint8_t* const_data() const { return _data; }
 
 private:

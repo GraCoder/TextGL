@@ -13,7 +13,7 @@ TC_Font::TC_Font(const char *family) : _italic(false), _bold(false)
   memcpy(_family, family, n);
   _family[n] = 0;
 
-  set_font_pt_size(72);
+  set_font_pt_size(14);
 }
 
 TC_Font::~TC_Font() {}
