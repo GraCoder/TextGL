@@ -40,8 +40,15 @@ set(src_intern
 	intern/TC_GlyText.cpp
 	intern/TC_GlyChar.cpp
 
+	intern/TC_Library.h
+	intern/TC_Library.cpp
+
 	intern/TC_TextureCache.h
 	intern/TC_TextureCache.cpp
+	intern/TC_TextShader.h
+	intern/TC_TextShader.cpp
+	intern/TC_FontMatrix.h
+	intern/TC_FontMatrix.cpp
 )
 
 if(OpenSceneGraph_FOUND)

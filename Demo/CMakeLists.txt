@@ -38,6 +38,8 @@ target_link_libraries(${prj_name} PRIVATE ${OSGVIEWER_LIBRARY} ${OSGGA_LIBRARY} 
 
 target_link_libraries(${prj_name} PRIVATE TextGL Opengl32)
 
+set_target_properties(Qt5::Core Qt5::Widgets Qt5::Gui PROPERTIES MAP_IMPORTED_CONFIG_DEBUG Release)
+
 target_link_libraries(${prj_name} PRIVATE Qt5::Widgets)
 
 set_target_properties(${prj_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

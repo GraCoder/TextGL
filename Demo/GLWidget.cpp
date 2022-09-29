@@ -94,9 +94,9 @@ void GLWidget::createViewer()
   _viewer->setSceneData(root);
   root->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
   {
-    auto testNode = osgDB::readNodeFile("D:\\08_Store\\OpenSceneGraph-Data\\cow.osg");
-    //auto testNode = osgDB::readNodeFile("D:\\dev\\osg\\OpenSceneGraph-Data-3.4.0\\OpenSceneGraph-Data\\cow.osg");
-    root->addChild(testNode);
+    //auto testNode = osgDB::readNodeFile("D:\\08_Store\\OpenSceneGraph-Data\\cow.osg");
+    auto testNode = osgDB::readNodeFile("D:\\dev\\osg\\OpenSceneGraph-Data-3.4.0\\OpenSceneGraph-Data\\cow.osg");
+    //root->addChild(testNode);
     //_viewer->getCameraManipulator()->
     _viewer->getCameraManipulator()->setHomePosition({0, 0, 100}, {0, 0, 0}, osg::Y_AXIS);
   }

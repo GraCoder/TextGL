@@ -19,7 +19,10 @@ public:
   TC_Font(const char *ptr = "simsun");
   ~TC_Font();
 
-  uint32_t font_size() const { return _size; }
+  //pixel size
+  uint32_t size() const;
+  
+  uint32_t point_size() const; 
 
   void set_font_pt_size(uint32_t);
 

@@ -1,4 +1,5 @@
 #include "TC_Font.h"
+#include "TC_FontMatrix.h"
 
 #include <cmath>
 
@@ -18,6 +19,11 @@ TC_Font::TC_Font(const char *family) : _italic(false), _bold(false)
 
 TC_Font::~TC_Font() {}
 
+uint32_t TC_Font::size() const 
+{ return std::round(_size / 72.0 * dpi); }
+
+uint32_t TC_Font::point_size() const { return _size; }
+
 void TC_Font::set_font_pt_size(uint32_t ptz)
 {
   if (ptz > 72)
@@ -25,10 +31,13 @@ void TC_Font::set_font_pt_size(uint32_t ptz)
   else if (ptz < 5)
     ptz = 5;
 
-  _size = std::ceil(ptz / 72.0 * 96);
+  _size = ptz;
 }
 
-void TC_Font::set_font_pix_size(uint32_t sz) { _size = sz; }
+void TC_Font::set_font_pix_size(uint32_t sz) 
+{
+  _size = std::round(sz * 72.0 / dpi);
+}
 
 std::string TC_Font::file_path() const { return font_manager_match_description(_family, _size, _bold, _italic); }
 

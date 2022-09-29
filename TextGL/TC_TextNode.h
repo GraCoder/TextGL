@@ -8,7 +8,9 @@
 
 namespace TC_TEXT{
 
+class TC_GlyChar;
 class TC_GlyText;
+class TC_FontMatrix;
 class TC_FontTexture;
 
 class TC_TextGL_EXPORT TC_TextNode : public osg::Drawable {
@@ -28,7 +30,7 @@ class TC_TextGL_EXPORT TC_TextNode : public osg::Drawable {
 
   void accept(osg::PrimitiveFunctor& pf) const;
 
-  void setText(TC_GlyText& glyText);
+  void setText(std::shared_ptr<TC_GlyText>& glyText);
 
 private:
   ~TC_TextNode();
@@ -40,8 +42,6 @@ private:
   const V3Array& getCoords() const { return _vertexs; }
 
   void initArraysAndBuffers();
-
-  void fillVertexAttribute();
 
   void drawImplementationSinglePass(osg::State& state, const osg::Vec4& colorMultiplier) const;
 
@@ -60,6 +60,7 @@ private:
   static osg::ref_ptr<osg::Texture2D> build_tex(std::shared_ptr<TC_FontTexture> tex);
 
 private:
+
   osg::ref_ptr<osg::VertexBufferObject> _vbo;
   osg::ref_ptr<osg::ElementBufferObject> _ebo;
 
@@ -69,6 +70,10 @@ private:
   V2Array _uvs;
 
   osg::ref_ptr<osg::DrawElements> _elems;
+
+  std::shared_ptr<TC_GlyText>	_gly_text;
+
+  std::vector<std::pair<osg::ref_ptr<osg::Texture2D>, uint32_t>> _char_idxs;
 };
 
 }

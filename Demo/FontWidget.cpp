@@ -8,6 +8,7 @@
 #include <QPlainTextEdit>
 #include <QStatusBar>
 #include <QToolbar>
+#include <QToolButton>
 
 #include "GLWidget.h"
 #include "TC_Font.h"
@@ -83,6 +84,12 @@ FontWidget::FontWidget()
 
   auto ftBox = new QFontComboBox;
   toolBar->addWidget(ftBox);
+
+  //{
+  //  auto btn = new QToolButton; 
+  //  toolBar->addWidget(btn);
+  //  btn->setStyleSheet("QToolButton{background-color:red}");
+  //}
   // ftBox->setWritingSystem(QFontDatabase::Latin);
 
   connect(ftBox, &QFontComboBox::currentFontChanged, this, &FontWidget::resetFont);
@@ -125,29 +132,21 @@ void FontWidget::resetFont(const QFont &font)
 
 void FontWidget::update_text()
 {
-  std::vector<uint32_t> codes;
-  auto str = _edit->toPlainText();
-  for (int i = 0; i < str.size(); i++) {
-    auto ch = str[i];
-    codes.push_back(ch.unicode());
-  }
-
-  TC_TEXT::TC_GlyText tex;
-  tex.set_font(_ft);
-  tex.set_text(codes);
-  auto chars = tex.get_chars();
-
-  // if(!chars.empty()){
-  //   auto &c = chars.front();
-  //   auto tx = c.get_texture();
-  //   auto sz = tx->get_size();
-  // QImage(tx->const_data(), sz.first, sz.second,
-  // QImage::Format_Grayscale8).save(QString("test{}.png"));
-  // }
+    auto tex = std::make_shared< TC_TEXT::TC_GlyText>();
+    tex->set_font(_ft);
+  auto  str = _edit->toPlainText().toUtf8().toStdString();
+  tex->set_text(str);
+  //auto chars = tex.get_chars();
+  //if (!chars.empty()) {
+  //  auto &c = chars.front();
+  //  auto tx = c.get_texture();
+  //  auto sz = tx->get_size();
+  //  QImage(tx->const_data(), sz.first, sz.second, QImage::Format_Grayscale8).save(QString("test{}.png"));
+  //}
 
   auto root = _gl_widget->getRoot();
   if (root) {
-    root->removeChildren(1, root->getNumChildren());
+    root->removeChildren(0, root->getNumChildren());
     auto node = new TC_TEXT::TC_TextNode;
     node->setText(tex);
     root->addChild(node);
