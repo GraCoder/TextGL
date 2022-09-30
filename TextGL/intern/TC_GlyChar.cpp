@@ -3,7 +3,10 @@
 
 namespace TC_TEXT {
 
-TC_GlyChar::TC_GlyChar(uint32_t code) : _code(code) {}
+TC_GlyChar::TC_GlyChar(uint32_t code) 
+	: _code(code)
+	, _texture(nullptr)
+{}
 
 TC_GlyChar::~TC_GlyChar() {}
 

@@ -354,9 +354,9 @@ public:
 	inline T& refy() { return base::data_[1]; }
 	inline T& refz() { return base::data_[2]; }
 
-	inline const T& x() { return base::data_[0]; }
-	inline const T& y() { return base::data_[1]; }
-	inline const T& z() { return base::data_[2]; }
+	inline const T& x() const { return base::data_[0]; }
+	inline const T& y() const { return base::data_[1]; }
+	inline const T& z() const { return base::data_[2]; }
 };
 
 template <typename T>
@@ -467,10 +467,10 @@ public:
 		return Tvec3<T>(base::data_[0], base::data_[1], base::data_[2]);
 	}
 
-	inline T& x() { return base::data[0]; }
-	inline T& y() { return base::data[1]; }
-	inline T& z() { return base::data[2]; }
-	inline T& w() { return base::data[3]; }
+	inline T& x() { return base::data_[0]; }
+	inline T& y() { return base::data_[1]; }
+	inline T& z() { return base::data_[2]; }
+	inline T& w() { return base::data_[3]; }
 };
 
 // These types don't exist in GLSL and don't have full implementations

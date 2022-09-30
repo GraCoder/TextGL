@@ -14,10 +14,10 @@ class TC_TextGL_EXPORT TC_GlyChar {
   friend class TC_TextureCache;
 
 public:
-  TC_GlyChar(uint32_t code);
+  TC_GlyChar(uint32_t code = 0);
   ~TC_GlyChar();
 
-  inline uint32_t code() { return _code; }
+  inline uint32_t code() const { return _code; }
 
   void build(const TC_Font &);
 
@@ -34,6 +34,9 @@ public:
   inline std::pair<float, float> tex_lt_coord() { return std::make_pair(_ltu, _ltv); }
 
   inline std::pair<float, float> tex_rb_coord() { return std::make_pair(_rbu, _rbv); }
+
+  inline bool valid() { return _texture != nullptr; }
+
  private:
   uint32_t _code;
 

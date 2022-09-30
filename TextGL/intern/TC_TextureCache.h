@@ -36,7 +36,7 @@ private:
 
   void dirty_texture(texture_font_t *);
 
-  void load_gly(TC_GlyChar *, const TC_Font *);
+  bool load_gly(TC_GlyChar *, const TC_Font *);
 
   FT_Face	load_face(const std::string &, int idx = 0);
   FT_Error	set_size(FT_Face f, float size);
