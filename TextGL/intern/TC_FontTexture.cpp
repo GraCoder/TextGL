@@ -69,6 +69,15 @@ const TC_GlyChar *TC_FontTexture::getchar(uint32_t code)
 int TC_FontTexture::space_fit(int idx, int w, int h)
 {
   auto &node = _nodes[idx];
+  int x = node.x(), y = node.y();
+  if (x + w > _width - 1)
+    return -1;
+  int wleft = w;
+  while(wleft>0){
+    auto &node = _nodes[idx];
+    if(node.y() > y)
+
+  }
 }
 
 TC_FontTexture::TC_FontTexture(TC_FontTexture &other)
