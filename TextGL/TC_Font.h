@@ -14,6 +14,14 @@
 
 namespace TC_TEXT{
 
+enum RenderMode { 
+    RENDER_NORMAL, 
+    RENDER_OUTLINE_EDGE, 
+    RENDER_OUTLINE_POSITIVE, 
+    RENDER_OUTLINE_NEGATIVE, 
+    RENDER_SIGNED_DISTANCE_FIELD 
+}; 
+
 class TC_TextGL_EXPORT TC_Font {
 public:
   TC_Font(const char *ptr = "simsun");
@@ -46,10 +54,22 @@ public:
     return _bold < ft._bold;
   }
 
+  RenderMode& rendermode() { return _render_mode; }
+  const RenderMode& rendermode() const { return _render_mode; }
+
+  int& hinting() { return _hinting; }
+  const int& hinting() const { return _hinting; }
+
+  int& padding() { return _padding; }
+  const int& padding() const { return _padding; }
+
 private:
   bool _italic = false;
   bool _bold = false;
   uint32_t _size = 12;
+
+  int _hinting = 0, _padding = 0;
+  RenderMode _render_mode;
 
   char _family[32];
 };

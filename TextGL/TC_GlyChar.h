@@ -11,9 +11,9 @@ class TC_Font;
 class TC_FontTexture;
 
 class TC_TextGL_EXPORT TC_GlyChar {
+  friend class TC_FontTexture;
   friend class TC_TextureCache;
-
-public:
+ public:
   TC_GlyChar(uint32_t code = 0);
   ~TC_GlyChar();
 

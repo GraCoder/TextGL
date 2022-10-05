@@ -10,6 +10,8 @@ TC_FontTexture::TC_FontTexture(int w, int h)
     , _height(h)
 {
   _nodes.push_back(tg::vec4i{1, 1, w - 2, h - 2});
+  _data = new unsigned char[w * h];
+  memset(_data, 0, w * h);
 }
 
 tg::vec2i TC_FontTexture::getspace(int w, int h)
@@ -55,7 +57,18 @@ tg::vec2i TC_FontTexture::getspace(int w, int h)
     idx++;
   }
 
+  space_merge();
   return reg;
+}
+
+void TC_FontTexture::addchar(TC_GlyChar *glychar, const tg::vec2i &v)
+{
+  glychar->_ltu = float(v.x()) / _width;
+  glychar->_ltv = float(v.y()) / _height;
+  glychar->_rbu = float(v.x() + glychar->width()) / _width;
+  glychar->_rbv = float(v.y() + glychar->height()) / _height;
+  glychar->_texture = shared_from_this();
+  _glys[glychar->code()] = *glychar;
 }
 
 const TC_GlyChar *TC_FontTexture::getchar(uint32_t code)
@@ -64,6 +77,16 @@ const TC_GlyChar *TC_FontTexture::getchar(uint32_t code)
   if (iter != _glys.end())
     return &iter->second;
   return nullptr;
+}
+
+void TC_FontTexture::filldata(const tg::vec4i &rect, std::vector<uint8_t> &data) 
+{
+  _dirty = true;
+
+  for (int i = 0; i < rect.w(); i++) {
+    auto dst = _data + (rect.y() + i) * _width + rect.x();
+    memcpy(dst, data.data() + i * rect.z(), rect.z());
+  }
 }
 
 int TC_FontTexture::space_fit(int idx, int w, int h)
@@ -75,8 +98,28 @@ int TC_FontTexture::space_fit(int idx, int w, int h)
   int wleft = w;
   while(wleft>0){
     auto &node = _nodes[idx];
-    if(node.y() > y)
+    if (node.y() > y) y = node.y();
 
+    if (y + h > _height - 1) return -1;
+
+    wleft -= node.z();
+    idx++;
+  }
+  return y;
+}
+
+void TC_FontTexture::space_merge() 
+{
+  int i = 1;
+  while(i < _nodes.size()) {
+    auto &node = _nodes[i - 1];
+    auto &next = _nodes[i];
+    if(node.y() == next.y()) {
+      node.z() += next.z();
+      _nodes.erase(_nodes.begin() + i);
+      continue;
+    }
+    i++;
   }
 }
 
@@ -85,7 +128,10 @@ TC_FontTexture::TC_FontTexture(TC_FontTexture &other)
   this->operator=(other);
 }
 
-TC_FontTexture::~TC_FontTexture() {}
+TC_FontTexture::~TC_FontTexture() 
+{
+  delete []_data;
+}
 
 TC_FontTexture &TC_FontTexture::operator=(TC_FontTexture &other)
 {

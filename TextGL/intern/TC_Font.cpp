@@ -7,7 +7,12 @@
 
 namespace TC_TEXT{
 
-TC_Font::TC_Font(const char *family) : _italic(false), _bold(false)
+TC_Font::TC_Font(const char *family) 
+    : _italic(false)
+    , _bold(false)
+    , _render_mode(RENDER_NORMAL)
+    , _hinting(0)
+    , _padding(0)
 {
   int n = strlen(family);
   if (n > 31) n = 31;

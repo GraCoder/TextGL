@@ -28,7 +28,6 @@ void main()
 {
 	vec4 clr = texture(tex, tex_coord);	
 	f_color = vec4(clr.x, clr.x, clr.x, clr.x);
-	//f_color = vec4(1, 1, 1, 1);
 }
 
 )";

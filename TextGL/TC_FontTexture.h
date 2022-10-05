@@ -35,13 +35,19 @@ public:
 
   tg::vec2i getspace(int w, int h);
 
-  void addchar(const TC_GlyChar* glychar) { _glys[glychar->code()] = *glychar; };
-
-public:
+  void addchar(TC_GlyChar* glychar, const tg::vec2i& v);
+  
+ public:
 
   const TC_GlyChar* getchar(uint32_t code);
 
-  int space_fit(int idx, int w, int h);
+private:
+
+  void	filldata(const tg::vec4i &rect, std::vector<uint8_t> &data);
+
+  int	space_fit(int idx, int w, int h);
+
+  void	space_merge();
 
 private:
   TC_FontTexture(TC_FontTexture&);

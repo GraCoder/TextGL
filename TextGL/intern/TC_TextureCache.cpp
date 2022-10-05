@@ -6,14 +6,12 @@
 #include "TC_FontMatrix.h"
 #include "TC_Library.h"
 
-#include "texture-atlas.h"
-#include "texture-font.h"
-
 #include <freetype/freetype.h>
 #include <freetype/ftsizes.h>
 #include <freetype/ftbitmap.h>
 #include <freetype/ftglyph.h>
 #include <freetype/ftbbox.h>
+#include <freetype/ftstroke.h>
 
 using namespace TC_TEXT;
 
@@ -26,88 +24,249 @@ TC_TextureCache *TC_TextureCache::instance()
 void TC_TextureCache::build(TC_GlyChar *glychar, const TC_Font *ft)
 {
   const TC_GlyChar *cached;
-  if(cached = find_glyph(ft, glychar->code())) {
-    *glychar = *cached; 
+  if (cached = find_glyph(ft, glychar->code())) {
+    *glychar = *cached;
     return;
   }
 
   if (!load_gly(glychar, ft))
     return;
-    
+
   auto &set = _cache[*ft];
-  for(auto iter : set){
-    if(iter->getspace(glychar->width(), glychar->height())) {
+  for (auto iter : set) {
+    auto sp = iter->getspace(glychar->width(), glychar->height());
+    if (sp.x() != -1 && sp.y() != -1) {
+      iter->addchar(glychar, sp);
+      iter->filldata(tg::vec4i(sp, glychar->width(), glychar->height()), _data);
     }
   }
 
   auto tex = std::make_shared<TC_FontTexture>();
-  tex->addchar(glychar);
+  auto sp = tex->getspace(glychar->width(), glychar->height());
+  tex->addchar(glychar, sp);
+  tex->filldata(tg::vec4i(sp, glychar->width(), glychar->height()), _data);
   set.push_back(tex);
 }
 
-void TC_TextureCache::construct(TC_GlyChar *gly_char, texture_font_t *tex, texture_glyph_t *gly) 
-{ 
-    gly_char->_padding = tex->padding;
-    gly_char->_advance = gly->advance_x / 64.0;
-    gly_char->_offsetx = gly->offset_x;
-    gly_char->_offsety = gly->offset_y;
-    gly_char->_width = gly->width;
-    gly_char->_height = gly->height;
-
-    gly_char->_ltu = gly->s0; gly_char->_ltv = gly->t0;
-    gly_char->_rbu = gly->s1; gly_char->_rbv = gly->t1;
-
-    gly_char->_texture = make_texture(tex); 
-}
-
-std::shared_ptr<TC_FontTexture> TC_TextureCache::make_texture(texture_font_t *tf)
+bool TC_TextureCache::load_gly(TC_GlyChar *glychar, const TC_Font *ft)
 {
-  return 0;
-}
+  auto face = load_face(ft->file_path());
+  if (face == nullptr)
+    return false;
+  FT_Error err = 0;
+  FT_Size sz;
 
-void TC_TextureCache::dirty_texture(texture_font_t *tex)
-{
-  //auto iter = _font_textures.find(tex);
-  //if (iter == _font_textures.end()) {
-  //  // error
+  err = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
+  err = FT_New_Size(face, &sz);
+  err = FT_Activate_Size(sz);
+  err = set_size(face, ft->point_size());
+
+  int flags = 0;
+  if (ft->rendermode() != RENDER_NORMAL && ft->rendermode() != RENDER_SIGNED_DISTANCE_FIELD) {
+    flags |= FT_LOAD_NO_BITMAP;
+  } else {
+    flags |= FT_LOAD_RENDER;
+  }
+
+  if (!ft->hinting()) {
+    flags |= FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT;
+  } else {
+    flags |= FT_LOAD_FORCE_AUTOHINT;
+  }
+
+  //if (self->atlas->depth == 3) {
+  //  FT_Library_SetLcdFilter(self->library->library, FT_LCD_FILTER_LIGHT);
+  //  flags |= FT_LOAD_TARGET_LCD;
+
+  //  if (self->filtering) {
+  //    FT_Library_SetLcdFilterWeights(self->library->library, self->lcd_weights);
+  //  }
+  //} else if (HRES == 1) {
+  //  /* ¡°FT_LOAD_TARGET_LIGHT
+  //   *  A lighter hinting algorithm for gray-level modes. Many generated
+  //   *  glyphs are fuzzier but better resemble their original shape.
+  //   *  This is achieved by snapping glyphs to the pixel grid
+  //   *  only vertically (Y-axis), as is done by FreeType's new CFF engine
+  //   *  or Microsoft's ClearType font renderer.¡±
+  //   * https://www.freetype.org/freetype2/docs/reference/ft2-base_interface.html#ft_load_target_xxx
+  //   */
+  //  flags |= FT_LOAD_TARGET_LIGHT;
   //}
-  //iter->second->set_dirty();
+
+//  if (depth == 4) {
+//#ifdef FT_LOAD_COLOR
+//    flags |= FT_LOAD_COLOR;
+//#else
+//    freetype_gl_error(Load_Color_Not_Available);
+//#endif
+//  }
+
+  auto char_idx = FT_Get_Char_Index(face, glychar->code());
+  err = FT_Load_Glyph(face, char_idx, flags);
+
+  FT_GlyphSlot slot = nullptr;
+  FT_Bitmap *bitmap = nullptr;
+  if (ft->rendermode() == RENDER_NORMAL || ft->rendermode() == RENDER_SIGNED_DISTANCE_FIELD) {
+    slot = face->glyph;
+    bitmap = &slot->bitmap;
+    auto ft_glyph_top = slot->bitmap_top;
+    auto ft_glyph_left = slot->bitmap_left;
+  } else {
+    //FT_Stroker stroker;
+    //FT_BitmapGlyph ft_bitmap_glyph;
+
+    //err = FT_Stroker_New(TCLIB->ftlib(), &stroker);
+    //FT_Stroker_Set(stroker, (int)(self->outline_thickness * HRES), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+
+    //err = FT_Get_Glyph(self->face->glyph, &ft_glyph);
+
+    //if (ft->rendermode() == RENDER_OUTLINE_EDGE)
+    //  err = FT_Glyph_Stroke(&ft_glyph, stroker, 1);
+    //else if (ft->rendermode() == RENDER_OUTLINE_POSITIVE)
+    //  err = FT_Glyph_StrokeBorder(&ft_glyph, stroker, 0, 1);
+    //else if (ft->rendermode() == RENDER_OUTLINE_NEGATIVE)
+    //  err = FT_Glyph_StrokeBorder(&ft_glyph, stroker, 1, 1);
+
+    //switch (self->atlas->depth) {
+    //  case 1:
+    //    err = FT_Glyph_To_Bitmap(&ft_glyph, FT_RENDER_MODE_NORMAL, 0, 1);
+    //    break;
+    //  case 3:
+    //    err = FT_Glyph_To_Bitmap(&ft_glyph, FT_RENDER_MODE_LCD, 0, 1);
+    //    break;
+    //  case 4:
+    //    err = FT_Glyph_To_Bitmap(&ft_glyph, FT_RENDER_MODE_NORMAL, 0, 1);
+    //    break;
+    //}
+
+    //ft_bitmap_glyph = (FT_BitmapGlyph)ft_glyph;
+    //ft_bitmap = ft_bitmap_glyph->bitmap;
+    //ft_glyph_top = ft_bitmap_glyph->top;
+    //ft_glyph_left = ft_bitmap_glyph->left;
+
+    //FT_Stroker_Done(stroker); 
+  }
+
+  struct {
+    int left;
+    int top;
+    int right;
+    int bottom;
+  } padding = {0, 0, 1, 1};
+
+  if (ft->rendermode() == RENDER_SIGNED_DISTANCE_FIELD) {
+    padding.top = 1;
+    padding.left = 1;
+  }
+
+  if (ft->padding() != 0) {
+    padding.top += ft->padding();
+    padding.left += ft->padding();
+    padding.right += ft->padding();
+    padding.bottom += ft->padding();
+  }
+
+  size_t src_w = /*depth == 3 ? ft_bitmap.width / 3 : */bitmap->width;
+  size_t src_h = bitmap->rows;
+
+  size_t tgt_w = src_w + padding.left + padding.right;
+  size_t tgt_h = src_h + padding.top + padding.bottom;
+
+  glychar->_width = tgt_w;
+  glychar->_height = tgt_h;
+  //glychar->_padding = 0;
+  glychar->_advance = slot->advance.x / 64.0;
+  glychar->_offsetx = slot->bitmap_left;
+  glychar->_offsety = slot->bitmap_top;
+
+  cache_data(*bitmap, tgt_w, tgt_h, padding.left, padding.top);
+
+  FT_Done_Face(face);
+  return err == 0;
 }
 
-bool TC_TextureCache::load_gly(TC_GlyChar *glychar, const TC_Font *ft) 
-{ 
-    auto face = load_face(ft->file_path()); 
-    if (face == nullptr) return false;
-    FT_Error err = 0;
-    FT_Size sz;
-
-    err = FT_New_Size(face, &sz);
-    err = FT_Activate_Size(sz);
-    err = set_size(face, ft->point_size());
-
-    
-}
-
-FT_Face TC_TextureCache::load_face(const std::string &file, int idx) 
+FT_Face TC_TextureCache::load_face(const std::string &file, int idx)
 {
   FT_Face face;
   FT_New_Face(TCLIB->ftlib(), file.c_str(), idx, &face);
   return face;
 }
 
-FT_Error TC_TextureCache::set_size(FT_Face face, float size) 
+FT_Error TC_TextureCache::set_size(FT_Face face, float size)
 {
   FT_Error err = 0;
-  FT_Matrix matrix = {(int)((1.0 / f26) * 0x10000L), (int)((0.0) * 0x10000L), (int)((0.0) * 0x10000L), (int)((1.0) * 0x10000L)};
-  err = FT_Set_Char_Size(face, size * f26, 0, dpi, dpi);
+  FT_Matrix matrix = {
+      (int)((1.0 / f26) * 0x10000L),
+      (int)((0.0) * 0x10000L), 
+      (int)((0.0) * 0x10000L), 
+      (int)((1.0) * 0x10000L)
+  };
+  err = FT_Set_Char_Size(face, size * f26, 0, dpi * f26, dpi);
   FT_Set_Transform(face, &matrix, NULL);
   return err;
 }
 
+void TC_TextureCache::cache_data(FT_Bitmap &bt, int w, int h, int l, int t) 
+{
+  _data.resize(w * h);
+  auto dst_ptr = &_data[0] + (t * w + l) /** depth*/;
+  auto src_ptr = bt.buffer;
+  //  if (ft_bitmap.pixel_mode == FT_PIXEL_MODE_BGRA && self->atlas->depth == 4) {
+  //    // BGRA in, RGBA out
+  //    for (i = 0; i < src_h; i++) {
+  //      int j;
+  //      for (j = 0; j < ft_bitmap.width; j++) {
+  //        uint32_t bgra, rgba;
+  //        bgra = ((uint32_t *)src_ptr)[j];
+  //#if __BYTE_ORDER == __BIG_ENDIAN
+  //        rgba = rol(__builtin_bswap32(bgra), 8);
+  //#else
+  //        rgba = rol(__builtin_bswap32(bgra), 24);
+  //#endif
+  //        ((uint32_t *)dst_ptr)[j] = rgba;
+  //      }
+  //      dst_ptr += tgt_w * self->atlas->depth;
+  //      src_ptr += ft_bitmap.pitch;
+  //    }
+  //  } else if (ft_bitmap.pixel_mode == FT_PIXEL_MODE_BGRA && self->atlas->depth == 1) {
+  //    // BGRA in, grey out: Use weighted sum for luminosity, and multiply by alpha
+  //    struct src_pixel_t {
+  //      uint8_t b;
+  //      uint8_t g;
+  //      uint8_t r;
+  //      uint8_t a;
+  //    } *src = (struct src_pixel_t *)ft_bitmap.buffer;
+  //    for (int row = 0; row < src_h; row++, dst_ptr += tgt_w * self->atlas->depth) {
+  //      for (int col = 0; col < src_w; col++, src++) {
+  //        dst_ptr[col] = (0.3 * src->r + 0.59 * src->g + 0.11 * src->b) * (src->a / 255.0);
+  //      }
+  //    }
+  //  } else if (ft_bitmap.pixel_mode == FT_PIXEL_MODE_GRAY && self->atlas->depth == 4) {
+  //    // Grey in, RGBA out: Use grey level for alpha channel, with white color
+  //    struct dst_pixel_t {
+  //      uint8_t r;
+  //      uint8_t g;
+  //      uint8_t b;
+  //      uint8_t a;
+  //    } *dst = (struct dst_pixel_t *)dst_ptr;
+  //    for (int row = 0; row < src_h; row++, dst += tgt_w) {
+  //      for (int col = 0; col < src_w; col++, src_ptr++) {
+  //        dst[col] = (struct dst_pixel_t){255, 255, 255, *src_ptr};
+  //      }
+  //    }
+  //  } else {
+  for (int i = 0; i < h; i++) {
+    memcpy(dst_ptr, src_ptr, bt.width);
+    dst_ptr += w;
+    src_ptr += bt.pitch;
+  }
+  //}
+}
+
 const TC_GlyChar *TC_TextureCache::find_glyph(const TC_Font *font, uint32_t code)
-{ 
+{
   auto set = _cache[*font];
-  for(auto iter : set){
+  for (auto iter : set) {
     auto ch = iter->getchar(code);
     if (ch)
       return ch;

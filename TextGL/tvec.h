@@ -471,6 +471,11 @@ public:
 	inline T& y() { return base::data_[1]; }
 	inline T& z() { return base::data_[2]; }
 	inline T& w() { return base::data_[3]; }
+
+	inline const T& x() const { return base::data_[0]; }
+	inline const T& y() const { return base::data_[1]; }
+	inline const T& z() const { return base::data_[2]; }
+	inline const T& w() const { return base::data_[3]; }
 };
 
 // These types don't exist in GLSL and don't have full implementations

@@ -6,6 +6,12 @@ namespace TC_TEXT {
 TC_GlyChar::TC_GlyChar(uint32_t code) 
 	: _code(code)
 	, _texture(nullptr)
+	, _offsetx(0)
+	, _offsety(0)
+	, _width(0)
+	, _height(0)
+	, _advance(0)
+	, _padding(0)
 {}
 
 TC_GlyChar::~TC_GlyChar() {}
