@@ -182,7 +182,7 @@ void TC_TextNode::drawImplementationSinglePass(osg::State& state, const osg::Vec
     for(auto &tex : _char_idxs){
       tex.first->apply(state);
       glDrawElements(GL_TRIANGLES, tex.second * 6, GL_UNSIGNED_INT, (const GLvoid *)count);
-      count += tex.second * 12;
+      count += tex.second * 24;
     }
   }
 }
@@ -294,8 +294,9 @@ osg::ref_ptr<osg::Texture2D> TC_TextNode::build_tex(std::shared_ptr<TC_FontTextu
   auto iter = _texs.find(tex);
   if (iter != _texs.end()) {
     if(tex->isdirty()){
-      tex->set_dirty(false);
+      //tex->set_dirty(false);
       iter->second->dirtyTextureObject();
+      //osgDB::writeImageFile(*iter->second->getImage(), "test.jpg");
     } 
     return iter->second;
   }

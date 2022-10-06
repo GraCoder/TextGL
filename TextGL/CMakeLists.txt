@@ -4,7 +4,7 @@ set(prj_name TextGL)
 
 project(${prj_name})
 
-find_package(OpenSceneGraph COMPONENTS osg osgDB osgText)
+find_package(OpenSceneGraph COMPONENTS OpenThreads osg osgDB osgText)
 
 set(src
 	TC_Font.h
@@ -34,7 +34,7 @@ target_include_directories(${prj_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(OpenSceneGraph_FOUND)
 	target_include_directories(${prj_name} PUBLIC ${OSG_INCLUDE_DIR})
-	target_link_libraries(${prj_name} PUBLIC ${OSG_LIBRARY} ${OSGTEXT_LIBRARY} ${OSGTEXT_LIBRARY} ${OSGDB_LIBRARY})
+	target_link_libraries(${prj_name} PUBLIC ${OPENTHREADS_LIBRARY} ${OSG_LIBRARY} ${OSGTEXT_LIBRARY} ${OSGTEXT_LIBRARY} ${OSGDB_LIBRARY})
 endif()
 
 

@@ -32,19 +32,22 @@ void TC_TextureCache::build(TC_GlyChar *glychar, const TC_Font *ft)
   if (!load_gly(glychar, ft))
     return;
 
+  int w = glychar->box_width();
+  int h = glychar->box_height();
   auto &set = _cache[*ft];
   for (auto iter : set) {
-    auto sp = iter->getspace(glychar->width(), glychar->height());
+    auto sp = iter->getspace(w, h);
     if (sp.x() != -1 && sp.y() != -1) {
       iter->addchar(glychar, sp);
-      iter->filldata(tg::vec4i(sp, glychar->width(), glychar->height()), _data);
+      iter->filldata(tg::vec4i(sp, w, h), _data);
+      return;
     }
   }
 
   auto tex = std::make_shared<TC_FontTexture>();
-  auto sp = tex->getspace(glychar->width(), glychar->height());
+  auto sp = tex->getspace(w, h);
   tex->addchar(glychar, sp);
-  tex->filldata(tg::vec4i(sp, glychar->width(), glychar->height()), _data);
+  tex->filldata(tg::vec4i(sp, w, h), _data);
   set.push_back(tex);
 }
 
@@ -147,39 +150,35 @@ bool TC_TextureCache::load_gly(TC_GlyChar *glychar, const TC_Font *ft)
     //FT_Stroker_Done(stroker); 
   }
 
-  struct {
-    int left;
-    int top;
-    int right;
-    int bottom;
-  } padding = {0, 0, 1, 1};
+  tg::vec4i padding = {0, 0, 1, 1};
 
   if (ft->rendermode() == RENDER_SIGNED_DISTANCE_FIELD) {
-    padding.top = 1;
-    padding.left = 1;
+    padding.y() = 1;
+    padding.x() = 1;
   }
 
   if (ft->padding() != 0) {
-    padding.top += ft->padding();
-    padding.left += ft->padding();
-    padding.right += ft->padding();
-    padding.bottom += ft->padding();
+    padding.y() += ft->padding();
+    padding.x() += ft->padding();
+    padding.z() += ft->padding();
+    padding.w() += ft->padding();
   }
 
   size_t src_w = /*depth == 3 ? ft_bitmap.width / 3 : */bitmap->width;
   size_t src_h = bitmap->rows;
 
-  size_t tgt_w = src_w + padding.left + padding.right;
-  size_t tgt_h = src_h + padding.top + padding.bottom;
+  size_t tgt_w = src_w + padding.x() + padding.z();
+  size_t tgt_h = src_h + padding.y() + padding.w();
 
-  glychar->_width = tgt_w;
-  glychar->_height = tgt_h;
+  glychar->_width = src_w;
+  glychar->_height = src_h;
+  glychar->_padding = padding;
   //glychar->_padding = 0;
   glychar->_advance = slot->advance.x / 64.0;
   glychar->_offsetx = slot->bitmap_left;
   glychar->_offsety = slot->bitmap_top;
 
-  cache_data(*bitmap, tgt_w, tgt_h, padding.left, padding.top);
+  cache_data(*bitmap, tgt_w, tgt_h, padding.x(), padding.y());
 
   FT_Done_Face(face);
   return err == 0;
@@ -208,7 +207,8 @@ FT_Error TC_TextureCache::set_size(FT_Face face, float size)
 
 void TC_TextureCache::cache_data(FT_Bitmap &bt, int w, int h, int l, int t) 
 {
-  _data.resize(w * h);
+  //_data.resize(w * h, 0);
+  _data.assign(w * h, 0);
   auto dst_ptr = &_data[0] + (t * w + l) /** depth*/;
   auto src_ptr = bt.buffer;
   //  if (ft_bitmap.pixel_mode == FT_PIXEL_MODE_BGRA && self->atlas->depth == 4) {
@@ -255,7 +255,7 @@ void TC_TextureCache::cache_data(FT_Bitmap &bt, int w, int h, int l, int t)
   //      }
   //    }
   //  } else {
-  for (int i = 0; i < h; i++) {
+  for (int i = 0; i < bt.rows; i++) {
     memcpy(dst_ptr, src_ptr, bt.width);
     dst_ptr += w;
     src_ptr += bt.pitch;

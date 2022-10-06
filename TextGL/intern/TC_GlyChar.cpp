@@ -11,7 +11,7 @@ TC_GlyChar::TC_GlyChar(uint32_t code)
 	, _width(0)
 	, _height(0)
 	, _advance(0)
-	, _padding(0)
+	, _padding(0, 0, 0, 0)
 {}
 
 TC_GlyChar::~TC_GlyChar() {}
