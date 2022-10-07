@@ -35,26 +35,23 @@ TC_TextNode::~TC_TextNode() {}
 
 void TC_TextNode::drawImplementation(osg::RenderInfo& renderInfo) const
 {
+  if (_vertexs->empty() || _uvs->empty() || _char_idxs.empty())
+    return;
+
   auto& state = *renderInfo.getState();
+  //osg::Matrix previous_prj = state.getProjectionMatrix();
   osg::Matrix previous_modelview = state.getModelViewMatrix();
 
   osg::Matrix modelview;
-  bool needToApplyMatrix = false;
-  // needToApplyMatrix = computeMatrix(modelview, &state);
+  bool needToApplyMatrix = computeMatrix(modelview, &state);
 
   if (needToApplyMatrix) {
-    // ** mult previous by the modelview for this context
-    modelview.postMult(previous_modelview);
-
-    // ** apply this new modelview matrix
+    //modelview.postMult(previous_modelview);
     state.applyModelViewMatrix(modelview);
 
     // workaround for GL3/GL2
     if (state.getUseModelViewAndProjectionUniforms()) state.applyModelViewAndProjectionUniformsIfRequired();
-
-    // OSG_NOTICE<<"New state.applyModelViewMatrix() "<<modelview<<std::endl;
   } else {
-    // OSG_NOTICE<<"No need to apply matrix "<<std::endl;
   }
 
   // state.Normal(_normal.x(), _normal.y(), _normal.z());
@@ -84,16 +81,18 @@ void TC_TextNode::drawImplementation(osg::RenderInfo& renderInfo) const
   state.haveAppliedAttribute(osg::StateAttribute::DEPTH);
 
   if (usingVertexBufferObjects && !usingVertexArrayObjects) {
-    // unbind the VBO's if any are used.
     vas->unbindVertexBufferObject();
     vas->unbindElementBufferObject();
   }
 
   if (needToApplyMatrix) {
-    // apply this new modelview matrix
     state.applyModelViewMatrix(previous_modelview);
 
-    // workaround for GL3/GL2
+    //if(_prj_matrix) {
+    //  _prj_matrix->set(previous_prj);
+    //  state.applyProjectionMatrix(_prj_matrix);
+    //}
+
     if (state.getUseModelViewAndProjectionUniforms()) state.applyModelViewAndProjectionUniformsIfRequired();
   }
 }
@@ -138,10 +137,22 @@ void TC_TextNode::setText(std::shared_ptr<TC_GlyText>& glyText) {
   auto min = _gly_text->min(), max = _gly_text->max();
   _initialBoundingBox._min.set(min.x(), min.y(), min.z());
   _initialBoundingBox._max.set(max.x(), max.y(), max.z());
+
+  set_style();
+
   dirtyGLObjects();
 }
 
-void TC_TextNode::initArraysAndBuffers() 
+void TC_TextNode::set_style() 
+{
+  if( AxisAlignment::AA_SCREEN == _gly_text->axis_alignment()) 
+  {
+    if (!_prj_matrix)
+      _prj_matrix = new osg::RefMatrix;
+  }
+}
+
+void TC_TextNode::initArraysAndBuffers()
 {
   _vbo = new osg::VertexBufferObject;
   _ebo = new osg::ElementBufferObject;
@@ -287,6 +298,19 @@ void TC_TextNode::dirtyGLObjects()
   _uvs->dirty();
 
   _elems->dirty();
+}
+
+bool TC_TextNode::computeMatrix(osg::Matrix& matrix, osg::State* state) const
+{
+  if (_gly_text->axis_alignment() == AxisAlignment::AA_SCREEN) {
+    auto vp = state->getCurrentViewport();
+    _prj_matrix->set(osg::Matrix::ortho2D(vp->x(), vp->x() + vp->width(), vp->y(), vp->y() + vp->height()));
+    state->applyProjectionMatrix(_prj_matrix.get());
+    //matrix = osg::Matrix::lookAt({0, 0, 100}, {0, 0, 0}, osg::Y_AXIS);
+    matrix = osg::Matrix::identity();
+    return true;
+  }
+  return false;
 }
 
 osg::ref_ptr<osg::Texture2D> TC_TextNode::build_tex(std::shared_ptr<TC_FontTexture> tex)

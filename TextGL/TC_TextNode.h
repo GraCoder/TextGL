@@ -41,6 +41,8 @@ private:
   V3Array& getCoords() { return _vertexs; }
   const V3Array& getCoords() const { return _vertexs; }
 
+  void set_style();
+
   void initArraysAndBuffers();
 
   void drawImplementationSinglePass(osg::State& state, const osg::Vec4& colorMultiplier) const;
@@ -57,6 +59,8 @@ private:
 
   void dirtyGLObjects() override;
 
+  bool computeMatrix(osg::Matrix& matrix, osg::State* state = 0) const;
+
   static osg::ref_ptr<osg::Texture2D> build_tex(std::shared_ptr<TC_FontTexture> tex);
 
 private:
@@ -72,6 +76,8 @@ private:
   osg::ref_ptr<osg::DrawElements> _elems;
 
   std::shared_ptr<TC_GlyText>	_gly_text;
+
+  mutable osg::ref_ptr<osg::RefMatrix> _prj_matrix;
 
   std::vector<std::pair<osg::ref_ptr<osg::Texture2D>, uint32_t>> _char_idxs;
 };

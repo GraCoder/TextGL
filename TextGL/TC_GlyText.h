@@ -11,6 +11,16 @@
 
 namespace TC_TEXT{
 
+enum class AxisAlignment{
+    AA_XY_PLANE,
+    AA_SCREEN
+};
+
+enum class CharacterSizeMode{
+    CSM_OBJECT,
+    CSM_SCREEN
+};
+
 class TC_FontMatrix;
 
 class TC_TextGL_EXPORT TC_GlyText {
@@ -28,7 +38,15 @@ public:
   //unicode
   void set_text(const std::vector<uint32_t> &text);
 
-  void set_max_width(float width);
+  void set_line_maxpix(int pix);
+
+  void set_line_maxnum(int num);
+
+  void set_axis_alignment(AxisAlignment aa);
+  AxisAlignment axis_alignment() { return _axis_align; }
+
+  void set_charactor_size_mode(CharacterSizeMode csm);
+  CharacterSizeMode character_size_mode() { return _size_mode; };
 
   struct GlyChars{
     std::vector<TC_GlyChar> chars;
@@ -50,6 +68,12 @@ private:
   TC_Font _font;
 
   float _ratio;
+
+  int _line_max;
+
+  AxisAlignment _axis_align;
+
+  CharacterSizeMode _size_mode;
 
   tg::vec3 _min, _max;
 

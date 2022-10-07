@@ -132,17 +132,19 @@ void FontWidget::resetFont(const QFont &font)
 
 void FontWidget::update_text()
 {
-    auto tex = std::make_shared< TC_TEXT::TC_GlyText>();
-    tex->set_font(_ft);
-  auto  str = _edit->toPlainText().toUtf8().toStdString();
+  auto tex = std::make_shared<TC_TEXT::TC_GlyText>();
+  tex->set_font(_ft);
+  tex->set_axis_alignment(TC_TEXT::AxisAlignment::AA_SCREEN);
+  tex->set_charactor_size_mode(TC_TEXT::CharacterSizeMode::CSM_SCREEN);
+  auto str = _edit->toPlainText().toUtf8().toStdString();
   tex->set_text(str);
-  //auto chars = tex.get_chars();
-  //if (!chars.empty()) {
-  //  auto &c = chars.front();
-  //  auto tx = c.get_texture();
-  //  auto sz = tx->get_size();
-  //  QImage(tx->const_data(), sz.first, sz.second, QImage::Format_Grayscale8).save(QString("test{}.png"));
-  //}
+  // auto chars = tex.get_chars();
+  // if (!chars.empty()) {
+  //   auto &c = chars.front();
+  //   auto tx = c.get_texture();
+  //   auto sz = tx->get_size();
+  //   QImage(tx->const_data(), sz.first, sz.second, QImage::Format_Grayscale8).save(QString("test{}.png"));
+  // }
 
   auto root = _gl_widget->getRoot();
   if (root) {

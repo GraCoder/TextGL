@@ -8,7 +8,13 @@
 
 namespace TC_TEXT {
 
-TC_GlyText::TC_GlyText() : _font("simsum"), _ratio(1) {}
+TC_GlyText::TC_GlyText() 
+    : _font("simsum")
+    , _ratio(1) 
+    , _line_max(80)
+    , _axis_align(AxisAlignment::AA_XY_PLANE)
+    , _size_mode(CharacterSizeMode::CSM_OBJECT)
+{}
 
 TC_GlyText::~TC_GlyText() {}
 
@@ -23,7 +29,15 @@ void TC_GlyText::set_text(const std::string& text)
     for (int i = 0; i < wstr.size(); i++) {
       tmp.push_back(wstr[i]);
     }
-    _texts.push_back(tmp);
+    int idx = 0, num = 0;
+    while((num = tmp.size() - idx) > 0){
+      std::vector<uint32_t> line;
+      if (num > _line_max)
+        num = _line_max;
+      line.assign(tmp.begin() + idx, tmp.begin() + idx + num);
+      idx += num;
+      _texts.push_back(line);
+    }
   }
 }
 
@@ -33,7 +47,22 @@ void TC_GlyText::set_text(const std::vector<uint32_t>& text)
   _texts.push_back(text);
 }
 
-void TC_GlyText::set_max_width(float width) {}
+void TC_GlyText::set_line_maxpix(int pix) {}
+
+void TC_GlyText::set_line_maxnum(int num) 
+{
+  _line_max = num;
+}
+
+void TC_GlyText::set_axis_alignment(AxisAlignment aa) 
+{
+  _axis_align = aa;
+}
+
+void TC_GlyText::set_charactor_size_mode(CharacterSizeMode csm) 
+{
+  _size_mode = csm;
+}
 
 TC_GlyText::GlyChars TC_GlyText::get_chars()
 {
