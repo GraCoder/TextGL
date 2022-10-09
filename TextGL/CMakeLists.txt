@@ -8,6 +8,7 @@ find_package(OpenSceneGraph COMPONENTS OpenThreads osg osgDB osgText)
 
 set(src
 	TC_Font.h
+	TC_FontDB.h
 	TC_FontTexture.h
 	TC_GlyText.h
 	TC_GlyChar.h

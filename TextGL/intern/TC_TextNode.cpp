@@ -325,6 +325,8 @@ osg::ref_ptr<osg::Texture2D> TC_TextNode::build_tex(std::shared_ptr<TC_FontTextu
     return iter->second;
   }
   auto ret = new osg::Texture2D;
+  ret->setFilter(ret->MIN_FILTER, ret->NEAREST);
+  ret->setFilter(ret->MAG_FILTER, ret->NEAREST);
   auto img = new osg::Image;
   auto sz = tex->get_size();
   img->setImage(sz.first, sz.second, 1, GL_RED, GL_RED, GL_UNSIGNED_BYTE, tex->data(), osg::Image::NO_DELETE);

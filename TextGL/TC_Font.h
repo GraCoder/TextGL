@@ -36,6 +36,8 @@ public:
 
   void set_font_pix_size(uint32_t);
 
+  const char* family() const { return _family; }
+
   std::string file_path() const;
 
   inline bool operator<(const TC_Font &ft) const
@@ -57,6 +59,11 @@ public:
   RenderMode& rendermode() { return _render_mode; }
   const RenderMode& rendermode() const { return _render_mode; }
 
+  inline bool& bold() { return _bold; }
+  inline const bool& bold() const { return _bold; }
+  inline bool& italic() { return _italic; }
+  inline const bool italic() const { return _italic; }
+
   int& hinting() { return _hinting; }
   const int& hinting() const { return _hinting; }
 
@@ -64,12 +71,12 @@ public:
   const int& padding() const { return _padding; }
 
 private:
-  bool _italic = false;
-  bool _bold = false;
+  bool _bold = 0;
+  bool _italic = 0;
   uint32_t _size = 12;
 
-  int _hinting = 0, _padding = 0;
-  RenderMode _render_mode;
+  int _hinting = 1, _padding = 0;
+  RenderMode _render_mode = RENDER_NORMAL;
 
   char _family[32];
 };

@@ -1,41 +1,42 @@
 
 set(src_intern
-	intern/texture-atlas.h
-	intern/texture-atlas.c
+	#intern/texture-atlas.h
+	#intern/texture-atlas.c
 
-	intern/texture-font.h
-	intern/texture-font.c
+	#intern/texture-font.h
+	#intern/texture-font.c
 
-	intern/font-manager.h
-	intern/font-manager.c
+	#intern/font-manager.h
+	#intern/font-manager.c
 
-	intern/vertex-buffer.h
-	intern/#vertex-buffer.c
+	#intern/vertex-buffer.h
+	#intern/#vertex-buffer.c
 
-	intern/vertex-attribute.h
-	intern/#vertex-attribute.c
+	#intern/vertex-attribute.h
+	#intern/#vertex-attribute.c
 
-	intern/distance-field.h
-	intern/distance-field.c
+	#intern/distance-field.h
+	#intern/distance-field.c
 
-	intern/ftgl-utils.h
-	intern/ftgl-utils.c
+	#intern/ftgl-utils.h
+	#intern/ftgl-utils.c
 
-	intern/platform.h
-	intern/platform.c
+	#intern/platform.h
+	#intern/platform.c
 
-	intern/utf8-utils.h
-	intern/utf8-utils.c
+	#intern/utf8-utils.h
+	#intern/utf8-utils.c
 
-	intern/vector.h
-	intern/vector.c
+	#intern/vector.h
+	#intern/vector.c
 
-	intern/edtaa3func.h
-	intern/edtaa3func.c
+	#intern/edtaa3func.h
+	#intern/edtaa3func.c
 
-	intern/vec234.h
+	#intern/vec234.h
 
 	intern/TC_Font.cpp
+	intern/TC_FontDB.cpp
 	intern/TC_FontTexture.cpp
 	intern/TC_GlyText.cpp
 	intern/TC_GlyChar.cpp
