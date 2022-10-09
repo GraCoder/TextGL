@@ -23,7 +23,7 @@ std::string TC_FontDB::file_path(const TC_Font& ft)
 
   FcInit();
   FcPattern *pattern = FcPatternCreate();
-  FcPatternAddDouble(pattern, FC_SIZE, ft.point_size());
+  FcPatternAddDouble(pattern, FC_SIZE, ft.point());
   FcPatternAddInteger(pattern, FC_WEIGHT, weight);
   FcPatternAddInteger(pattern, FC_SLANT, slant);
   FcPatternAddString(pattern, FC_FAMILY, (FcChar8 *)ft.family());

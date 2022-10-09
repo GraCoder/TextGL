@@ -18,7 +18,7 @@ class TC_TextGL_EXPORT TC_FontTexture : public std::enable_shared_from_this<TC_F
   friend class TC_TextureCache;
 
 public:
-  TC_FontTexture(int w = 1024, int h = 1024);
+  TC_FontTexture(int w = 512, int h = 512);
 
   ~TC_FontTexture();
 

@@ -28,7 +28,9 @@ public:
   TC_GlyText();
   ~TC_GlyText();
 
-  const TC_Font &font() { return _font; };
+  const TC_Font &font() { return _font; }
+
+  inline float &ratio() { return _ratio; }
 
   void set_font(const TC_Font &ft) { _font = ft; }
 

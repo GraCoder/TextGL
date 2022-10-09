@@ -17,7 +17,7 @@ void TC_FontMatrix::init()
   if (FT_New_Face(TCLIB->ftlib(), path.c_str(), 0, &face)) return;
   // FT_Size size;
   // if (FT_New_Size(face, &size)) return;
-  //_font.set_font_pt_size(36);
+  //_font.set_point(36);
   //if (FT_Set_Char_Size(face, _font.size() * f26, 0, dpi, dpi)) return;
 
   //face->ascender;

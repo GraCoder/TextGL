@@ -3,6 +3,8 @@
 
 #include <freetype/freetype.h>
 
+constexpr float minsz = 14;
+
 class TC_Library{
 public:
   static TC_Library* instance();

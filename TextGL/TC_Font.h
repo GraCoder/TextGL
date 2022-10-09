@@ -27,14 +27,13 @@ public:
   TC_Font(const char *ptr = "simsun");
   ~TC_Font();
 
-  //pixel size
-  uint32_t size() const;
+  uint32_t pixel() const;
   
-  uint32_t point_size() const; 
+  uint32_t point() const; 
 
-  void set_font_pt_size(uint32_t);
+  void set_point(uint32_t);
 
-  void set_font_pix_size(uint32_t);
+  void set_pixel(uint32_t);
 
   const char* family() const { return _family; }
 

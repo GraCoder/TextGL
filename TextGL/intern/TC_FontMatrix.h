@@ -16,10 +16,10 @@ public:
 
   const TC_Font& font() { return _font; } 
 
-  inline float width() { return _width * _font.size(); }
-  inline float height() { return _height * _font.size(); };
-  inline float ascend() { return _ascender * _font.size(); } 
-  inline float descend() { return _descender * _font.size(); }
+  inline float width() { return _width * _font.pixel(); }
+  inline float height() { return _height * _font.pixel(); };
+  inline float ascend() { return _ascender * _font.pixel(); } 
+  inline float descend() { return _descender * _font.pixel(); }
 
 private:
 

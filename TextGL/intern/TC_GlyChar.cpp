@@ -16,6 +16,9 @@ TC_GlyChar::TC_GlyChar(uint32_t code)
 
 TC_GlyChar::~TC_GlyChar() {}
 
-void TC_GlyChar::build(const TC_Font &ft) { TexCache->build(this, &ft); }
+void TC_GlyChar::build(const TC_Font &ft)
+{ 
+	TexCache->build(this, &ft); 
+}
 
 }  // namespace TC_TEXT

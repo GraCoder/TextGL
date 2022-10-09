@@ -67,10 +67,11 @@ tg::vec2i TC_FontTexture::getspace(int w, int h)
 
 void TC_FontTexture::addchar(TC_GlyChar *glychar, const tg::vec2i &v)
 {
-  glychar->_ltu = float(v.x()) / _width;
-  glychar->_ltv = float(v.y()) / _height;
-  glychar->_rbu = float(v.x() + glychar->width()) / _width;
-  glychar->_rbv = float(v.y() + glychar->height()) / _height;
+  float of = 0.5;
+  glychar->_ltu = float(v.x() + of) / _width;
+  glychar->_ltv = float(v.y() + of) / _height;
+  glychar->_rbu = float(v.x() + glychar->width() - of) / _width;
+  glychar->_rbv = float(v.y() + glychar->height() - of) / _height;
   glychar->_texture = shared_from_this();
   _glys[glychar->code()] = *glychar;
 }
@@ -93,7 +94,7 @@ void TC_FontTexture::filldata(const tg::vec4i &rect, std::vector<uint8_t> &data)
   }
 
   //stbi_write_png("test1.png", rect.z(), rect.w(), 1, data.data(), 0);
-  stbi_write_png("test.png", _width, _height, 1, _data, 0);
+  //stbi_write_png("test.png", _width, _height, 1, _data, 0);
 }
 
 int TC_FontTexture::space_fit(int idx, int w, int h)

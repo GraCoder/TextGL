@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <osg/PrimitiveSet>
 #include <osg/BlendFunc>
+#include <osg/Depth>
 //#include <osgDB/WriteFile>
 
 #include "TC_GlyText.h"
@@ -149,6 +150,8 @@ void TC_TextNode::set_style()
   {
     if (!_prj_matrix)
       _prj_matrix = new osg::RefMatrix;
+    auto ss = getOrCreateStateSet();
+    ss->setAttribute(new osg::Depth(osg::Depth::ALWAYS));
   }
 }
 

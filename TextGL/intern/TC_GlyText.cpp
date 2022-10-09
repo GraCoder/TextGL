@@ -1,4 +1,5 @@
 #include "TC_GlyText.h"
+#include "TC_Library.h"
 #include "TC_FontMatrix.h"
 
 #include <freetype/freetype.h>

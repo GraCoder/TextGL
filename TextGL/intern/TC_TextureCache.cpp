@@ -62,7 +62,7 @@ bool TC_TextureCache::load_gly(TC_GlyChar *glychar, const TC_Font *ft)
   err = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
   err = FT_New_Size(face, &sz);
   err = FT_Activate_Size(sz);
-  err = set_size(face, ft->point_size());
+  err = set_size(face, ft->point());
 
   int flags = 0;
   if (ft->rendermode() != RENDER_NORMAL && ft->rendermode() != RENDER_SIGNED_DISTANCE_FIELD) {
