@@ -14,7 +14,7 @@
 
 GLWidget::GLWidget() : _viewer(nullptr)
 {
-  setMinimumSize(600, 400);
+  setMinimumSize(600, 480);
   auto timer = new QTimer(this);
   connect(timer, &QTimer::timeout, this, &GLWidget::render);
   timer->start(30);

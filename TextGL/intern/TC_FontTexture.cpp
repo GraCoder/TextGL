@@ -67,7 +67,7 @@ tg::vec2i TC_FontTexture::getspace(int w, int h)
 
 void TC_FontTexture::addchar(TC_GlyChar *glychar, const tg::vec2i &v)
 {
-  float of = 0.5;
+  float of = 0;
   glychar->_ltu = float(v.x() + of) / _width;
   glychar->_ltv = float(v.y() + of) / _height;
   glychar->_rbu = float(v.x() + glychar->width() - of) / _width;

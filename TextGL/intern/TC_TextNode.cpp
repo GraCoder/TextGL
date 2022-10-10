@@ -146,7 +146,7 @@ void TC_TextNode::setText(std::shared_ptr<TC_GlyText>& glyText) {
 
 void TC_TextNode::set_style() 
 {
-  if( AxisAlignment::AA_SCREEN == _gly_text->axis_alignment()) 
+  if (CharacterSizeMode::CSM_SCREEN == _gly_text->character_size_mode()) 
   {
     if (!_prj_matrix)
       _prj_matrix = new osg::RefMatrix;
