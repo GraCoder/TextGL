@@ -6,6 +6,8 @@
 
 namespace TC_TEXT{
 
+uint32_t dpi_ = 96;
+
 TC_FontMatrix::TC_FontMatrix(const TC_Font &ft):_font(ft) { init(); }
 
 TC_FontMatrix::~TC_FontMatrix() {}

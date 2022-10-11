@@ -5,7 +5,7 @@
 
 namespace TC_TEXT{
 
-constexpr uint32_t dpi = 96;
+extern uint32_t dpi_;
 constexpr uint32_t f26 = 64;
 
 class TC_FontMatrix {

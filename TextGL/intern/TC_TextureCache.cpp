@@ -200,7 +200,7 @@ FT_Error TC_TextureCache::set_size(FT_Face face, float size)
       (int)((0.0) * 0x10000L), 
       (int)((1.0) * 0x10000L)
   };
-  err = FT_Set_Char_Size(face, size * f26, 0, dpi * f26, dpi);
+  err = FT_Set_Char_Size(face, size * f26, 0, dpi_ * f26, dpi_);
   FT_Set_Transform(face, &matrix, NULL);
   return err;
 }

@@ -27,6 +27,8 @@ public:
   TC_Font(const char *ptr = "simsun");
   ~TC_Font();
 
+  void set_dpi(uint32_t);
+
   uint32_t pixel() const;
   
   uint32_t point() const; 

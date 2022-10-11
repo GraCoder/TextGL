@@ -128,13 +128,13 @@ void FontWidget::resetFont(const QFont &font)
   TC_TEXT::TC_Font ft(iter == fontMap.end() ? f.c_str() : iter->second.c_str());
   auto file_path = ft.file_path();
   _ft = ft;
+  _ft.set_point(16);
   _edit->appendPlainText(QString::fromLocal8Bit(file_path.c_str()));
 }
 
 void FontWidget::update_text()
 {
   auto tex = std::make_shared<TC_TEXT::TC_GlyText>();
-  _ft.set_point(12);
   tex->set_font(_ft);
   tex->set_axis_alignment(TC_TEXT::AxisAlignment::AA_SCREEN);
   tex->set_charactor_size_mode(TC_TEXT::CharacterSizeMode::CSM_SCREEN);
