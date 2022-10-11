@@ -101,8 +101,8 @@ std::vector<tg::vec3> TC_GlyText::vertexs(GlyChars& chars)
         auto x = wtmp + oft.first;
         float l = std::round(x * _ratio);
         float t = std::round((oft.second + htmp) * _ratio);
-        float f = std::round((oft.second - ch.height() + 1 + htmp) * _ratio);
-        float r = std::round((x + ch.width() - 1) * _ratio);
+        float f = std::round((oft.second - ch.height() + htmp) * _ratio);
+        float r = std::round((x + ch.width()) * _ratio);
         ret.push_back(tg::vec3(l, t, 0));
         ret.push_back(tg::vec3(l, f, 0));
         ret.push_back(tg::vec3(r, f, 0));

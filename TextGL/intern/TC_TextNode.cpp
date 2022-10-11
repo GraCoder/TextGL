@@ -307,8 +307,10 @@ bool TC_TextNode::computeMatrix(osg::Matrix& matrix, osg::State* state) const
 {
   if (_gly_text->axis_alignment() == AxisAlignment::AA_SCREEN) {
     auto vp = state->getCurrentViewport();
-    _prj_matrix->set(osg::Matrix::ortho2D(vp->x(), vp->x() + vp->width(), vp->y(), vp->y() + vp->height()));
-    state->applyProjectionMatrix(_prj_matrix.get());
+    if(vp) {
+        _prj_matrix->set(osg::Matrix::ortho2D(vp->x(), vp->x() + vp->width(),vp->y(), vp->y() + vp->height()));
+        state->applyProjectionMatrix(_prj_matrix.get());
+    }
     //matrix = osg::Matrix::lookAt({0, 0, 100}, {0, 0, 0}, osg::Y_AXIS);
     matrix = osg::Matrix::identity();
     return true;

@@ -14,7 +14,7 @@ TC_Font::TC_Font(const char *family)
   memcpy(_family, family, n);
   _family[n] = 0;
 
-  set_point(16);
+  set_point(14);
 }
 
 TC_Font::~TC_Font() {}

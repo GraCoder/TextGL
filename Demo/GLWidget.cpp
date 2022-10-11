@@ -15,6 +15,9 @@
 GLWidget::GLWidget() : _viewer(nullptr)
 {
   setMinimumSize(600, 480);
+
+  createViewer();
+
   auto timer = new QTimer(this);
   connect(timer, &QTimer::timeout, this, &GLWidget::render);
   timer->start(30);
@@ -32,10 +35,6 @@ void GLWidget::render()
 void GLWidget::resizeEvent(QResizeEvent* ev)
 {
   Base::resizeEvent(ev);
-
-  if (!_viewer) {
-    createViewer();
-  }
 
   auto sz = size();
   int w = sz.width(), h = sz.height();
@@ -64,8 +63,8 @@ void GLWidget::createViewer()
   osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
   traits->x = 0;
   traits->y = 0;
-  traits->width = 600;
-  traits->height = 480;
+  traits->width = 60;
+  traits->height = 48;
   traits->windowingSystemPreference = "Win32";
   traits->windowDecoration = false;
   traits->doubleBuffer = true;
@@ -87,7 +86,8 @@ void GLWidget::createViewer()
 
   auto handle = dynamic_cast<osgViewer::GraphicsHandleWin32*>(gc.get());
   if (handle) {
-    SetParent(handle->getHWND(), (HWND)winId());
+    auto wnd = (HWND) winId();
+    SetParent(handle->getHWND(), wnd);
   }
 
   auto root = new osg::Group;
