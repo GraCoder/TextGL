@@ -16,16 +16,23 @@ GLWidget::GLWidget() : _viewer(nullptr)
 {
   setMinimumSize(600, 480);
 
-  createViewer();
-
   auto timer = new QTimer(this);
   connect(timer, &QTimer::timeout, this, &GLWidget::render);
   timer->start(30);
+
+  _root = new osg::Group; _root->ref();
+  _root->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
 }
 
-GLWidget::~GLWidget() {}
+GLWidget::~GLWidget() 
+{
+  _root->unref();
+}
 
-osg::Group* GLWidget::getRoot() { return dynamic_cast<osg::Group*>(_viewer->getSceneData()); }
+osg::Group* GLWidget::getRoot()
+{
+  return _root;
+}
 
 void GLWidget::render()
 {
@@ -40,6 +47,8 @@ void GLWidget::resizeEvent(QResizeEvent* ev)
   int w = sz.width(), h = sz.height();
 
   if (w == 0 || h == 0) return;
+
+  createViewer();
 
   if (!_viewer) return;
 
@@ -83,6 +92,7 @@ void GLWidget::createViewer()
   camera->setReadBuffer(buffer);
 
   _viewer->setCamera(camera);
+  _viewer->setSceneData(_root);
 
   auto handle = dynamic_cast<osgViewer::GraphicsHandleWin32*>(gc.get());
   if (handle) {
@@ -90,9 +100,6 @@ void GLWidget::createViewer()
     SetParent(handle->getHWND(), wnd);
   }
 
-  auto root = new osg::Group;
-  _viewer->setSceneData(root);
-  root->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::OVERRIDE);
   {
     //auto testNode = osgDB::readNodeFile("D:\\08_Store\\OpenSceneGraph-Data\\cow.osg");
     auto testNode = osgDB::readNodeFile("D:\\dev\\osg\\OpenSceneGraph-Data-3.4.0\\OpenSceneGraph-Data\\cow.osg");

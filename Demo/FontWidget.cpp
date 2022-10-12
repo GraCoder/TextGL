@@ -114,8 +114,6 @@ FontWidget::FontWidget()
     _edit = txt;
 
     connect(txt, &QPlainTextEdit::textChanged, this, &FontWidget::update_text);
-
-    txt->setPlainText("a");
   }
 }
 
@@ -136,7 +134,7 @@ void FontWidget::update_text()
 {
   auto tex = std::make_shared<TC_TEXT::TC_GlyText>();
   tex->set_font(_ft);
-  tex->set_axis_alignment(TC_TEXT::AxisAlignment::AA_SCREEN);
+  //tex->set_axis_alignment(TC_TEXT::AxisAlignment::AA_SCREEN);
   tex->set_charactor_size_mode(TC_TEXT::CharacterSizeMode::CSM_SCREEN);
   auto str = _edit->toPlainText().toUtf8().toStdString();
   tex->set_text(str);

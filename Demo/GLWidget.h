@@ -28,5 +28,6 @@ class GLWidget : public QWidget {
  private:
   typedef QWidget Base;
 
+  osg::Group *_root;
   osgViewer::Viewer *_viewer;
 };

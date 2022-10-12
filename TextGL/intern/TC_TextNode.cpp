@@ -305,15 +305,17 @@ void TC_TextNode::dirtyGLObjects()
 
 bool TC_TextNode::computeMatrix(osg::Matrix& matrix, osg::State* state) const
 {
-  if (_gly_text->axis_alignment() == AxisAlignment::AA_SCREEN) {
+  if (_gly_text->character_size_mode() == CharacterSizeMode::CSM_SCREEN || _gly_text->axis_alignment() == AxisAlignment::AA_SCREEN) {
     auto vp = state->getCurrentViewport();
     if(vp) {
         _prj_matrix->set(osg::Matrix::ortho2D(vp->x(), vp->x() + vp->width(),vp->y(), vp->y() + vp->height()));
         state->applyProjectionMatrix(_prj_matrix.get());
     }
-    //matrix = osg::Matrix::lookAt({0, 0, 100}, {0, 0, 0}, osg::Y_AXIS);
     matrix = osg::Matrix::identity();
     return true;
+  } else if(_gly_text->character_size_mode() == CharacterSizeMode::CSM_SCREEN) {
+  
+  } else if(_gly_text->axis_alignment() == AxisAlignment::AA_SCREEN){
   }
   return false;
 }
@@ -323,9 +325,7 @@ osg::ref_ptr<osg::Texture2D> TC_TextNode::build_tex(std::shared_ptr<TC_FontTextu
   auto iter = _texs.find(tex);
   if (iter != _texs.end()) {
     if(tex->isdirty()){
-      //tex->set_dirty(false);
       iter->second->dirtyTextureObject();
-      //osgDB::writeImageFile(*iter->second->getImage(), "test.jpg");
     } 
     return iter->second;
   }
